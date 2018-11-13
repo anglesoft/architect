@@ -46,5 +46,3 @@ class MyAwesomeFeature extends Feature
   }
 }
 ```
-
-TODO: Improve examples
