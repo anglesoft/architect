@@ -1,6 +1,8 @@
 # Architect
 Agile development suite for Laravel.
 
+/!\ THIS PROJECT IS A WORK IN PROGRESS.
+
 ## Concepts
 Architect lets you build software on top of the [Laravel Framework](https://github.com/laravel) adding a few concepts inspired by the [Lucid Architecture](https://github.com/lucid-architecture).
 
