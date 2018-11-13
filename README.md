@@ -25,7 +25,7 @@ Architect::feature('my awesome feature', function (Blueprint $code) {
 ```
 Executing:
 ```bash
-php artisan sprint:run
+php artisan sprint
 ```
 
 Will generate the following classes:
