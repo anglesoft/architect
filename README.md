@@ -2,7 +2,7 @@
 Agile development suite for Laravel.
 
 ## Concepts
-Architect lets you build software on top of the [Laravel Framework](https://github.com/laravel/laravel) adding a few concepts inspired by the [Lucid Architecture](https://github.com/lucid-architecture) library.
+Architect lets you build software on top of the [Laravel Framework](https://github.com/laravel) adding a few concepts inspired by the [Lucid Architecture](https://github.com/lucid-architecture).
 
 ### Features
 Features are classes meant to unclog your controllers. Each feature is a sequence of tasks. They can either be served by controllers, via the console, and can be queued. They should be testable.
