@@ -11,7 +11,7 @@ Features are classes meant to unclog your controllers. Each feature is a sequenc
 Tasks are meant to be the smallest pieces of logic within your app. They are responsible for one specific thing. Tasks should not use other tasks. They should be isolated, and testable. They extend the Laravel Queuable functionality. 
 
 ### Sprints (WIP)
-Sprints help you generate code in the same way you would update your database with migrations. It will generate features and tasks, and the appropriate tests. The generated code is boilerplate code: you'll still have to write your business logic within the generated classes, but it is intended to save you time and plan ahead which classes and methods you are going to build to fulfill the business objectives.
+Think of sprints as migrations for your features. It will generate features and tasks, and their respective tests. The generated code is boilerplate code: you'll still have to write your business logic within the generated classes, but it is intended to save you time and plan ahead which classes and methods you are going to build to fulfill the business objectives.
 
 Example of a sprint:
 ```php
