@@ -1,7 +1,7 @@
 # Architect
 Agile development suite for Laravel.
 
-/!\ THIS PROJECT IS A WORK IN PROGRESS.
+> /!\ THIS PROJECT IS A WORK IN PROGRESS
 
 ## Concepts
 Architect lets you build software on top of the [Laravel Framework](https://github.com/laravel) adding a few concepts inspired by the [Lucid Architecture](https://github.com/lucid-architecture).
@@ -17,10 +17,10 @@ Think of sprints as migrations for your features. It will generate features and 
 
 Example of a sprint:
 ```php
-Architect::feature('my awesome feature', function (Blueprint $feature) {
-    $feature->will('do something')->expect('request')->return('foo');
-    $feature->will('do another thing')->expect('foo')->return('bar');
-    $feature->will('one last thing')->expect('foo')->return('baz');
+Architect::feature('my awesome feature', function (Blueprint $code) {
+    $code->will('do something')->expect('request')->return('foo');
+    $code->will('do another thing')->expect('foo')->return('bar');
+    $code->will('one last thing')->expect('foo')->return('baz');
 });
 ```
 
