@@ -30,13 +30,18 @@ class Blueprint
             $this->tasks[] = $this->task;
     }
 
-    public function will($task)
+    public function task($task)
     {
         $this->pushPreviousTask();
 
         $this->task['class'] = $this->makeTaskClassNameFromString($task);
 
         return $this;
+    }
+
+    public function will($task) // Alias that might desappear
+    {
+        return $this->task($task);
     }
 
     public function expect($parameter) // TODO expect array;
