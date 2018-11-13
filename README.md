@@ -1,8 +1,10 @@
 # Architect
 Agile development suite for Laravel.
 
+> /!\ THIS PROJECT IS A WORK IN PROGRESS
+
 ## Concepts
-Architect lets you build software on top of the [Laravel Framework](https://github.com/laravel) adding a few concepts inspired by the [Lucid Architecture](https://github.com/lucid-architecture).
+Architect helps artisans to structure, generate and write maintainable code from human-readable migration-like files called "sprints". It is built on top of the popular [Laravel Framework](https://github.com/laravel), and implement concepts form the [Lucid Architecture](https://github.com/lucid-architecture).
 
 ### Features
 Features are classes meant to unclog your controllers. Each feature is a sequence of tasks. They can either be served by controllers, via the console, and can be queued. They should be testable.
@@ -15,10 +17,10 @@ Think of sprints as migrations for your features. It will generate features and 
 
 Example of a sprint:
 ```php
-Architect::feature('my awesome feature', function (Blueprint $feature) {
-    $feature->will('do something')->expect('request')->return('foo');
-    $feature->will('do another thing')->expect('foo')->return('bar');
-    $feature->will('one last thing')->expect('foo')->return('baz');
+Architect::feature('my awesome feature', function (Blueprint $code) {
+    $code->will('do something')->expect('request')->return('foo');
+    $code->will('do another thing')->expect('foo')->return('bar');
+    $code->will('one last thing')->expect('foo')->return('baz');
 });
 ```
 
@@ -37,12 +39,13 @@ App\Tests\Unit\OneLastThingTest;
 ```php
 class MyAwesomeFeature extends Feature 
 {
-  public function handle($request) {
-    $foo = $this->task(\App\Tasks\DoSomething::class, ['request' => $request]);
-    $bar = $this->task(\App\Tasks\DoAnotherThing::class, ['foo' => $foo]);
-    $baz = $this->task(\App\Tasks\OneLastThing::class, ['foo' => $foo]);
-    
-    return $baz;
-  }
+    public function handle($request) 
+    {
+        $foo = $this->task(\App\Tasks\DoSomething::class, ['request' => $request]);
+        $bar = $this->task(\App\Tasks\DoAnotherThing::class, ['foo' => $foo]);
+        $baz = $this->task(\App\Tasks\OneLastThing::class, ['foo' => $foo]);
+
+        return $baz;
+    }
 }
 ```
