@@ -5,7 +5,7 @@ Agile development suite for Laravel.
 Architect lets you build software on top of the Laravel Framework adding a few concepts inspired by the Lucid Architecture library.
 
 ### Features
-Features are classes meant to unclog your controllers. They are are sequence of tasks. They should be testable.
+Features are classes meant to unclog your controllers. Each feature is a sequence of tasks. They can either be served by controllers, via the console, and can be queued. They should be testable.
 
 ### Tasks
 Tasks are meant to be the smallest pieces of logic within your app. They are responsible for one specific thing. Tasks should not use other tasks. They should be isolated, and testable. They extend the Laravel Queuable functionality. 
@@ -23,6 +23,7 @@ Architect::feature('my awesome feature', function (Blueprint $feature) {
 ```
 
 Will generate the following classes:
+```php
 App\Features\MyAwesomeFeature;
 App\Tasks\DoSomething;
 App\Tasks\DoAnotherThing;
@@ -31,10 +32,11 @@ App\Tests\Feature\MyAwesomeFeatureTest;
 App\Tests\Unit\DoSomethingTest;
 App\Tests\Unit\DoAnotherThingTest;
 App\Tests\Unit\OneLastThingTest;
-
+```
 
 ```php
-class MyAwesomeFeature extends Feature {
+class MyAwesomeFeature extends Feature 
+{
   public function handle() {
     $foo = $this->task(\App\Tasks\DoSomething::class, ['request' => $request]);
     $bar = $this->task(\App\Tasks\DoAnotherThing::class, ['foo' => $foo]);
