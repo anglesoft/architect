@@ -23,6 +23,10 @@ Architect::feature('my awesome feature', function (Blueprint $code) {
     $code->will('one last thing')->expect('foo')->return('baz');
 });
 ```
+Executing:
+```bash
+php artisan sprint:run
+```
 
 Will generate the following classes:
 ```php
