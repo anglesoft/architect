@@ -39,7 +39,8 @@ App\Tests\Unit\OneLastThingTest;
 ```php
 class MyAwesomeFeature extends Feature 
 {
-  public function handle($request) {
+  public function handle($request) 
+  {
     $foo = $this->task(\App\Tasks\DoSomething::class, ['request' => $request]);
     $bar = $this->task(\App\Tasks\DoAnotherThing::class, ['foo' => $foo]);
     $baz = $this->task(\App\Tasks\OneLastThing::class, ['foo' => $foo]);
