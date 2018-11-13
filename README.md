@@ -24,11 +24,9 @@ Architect::feature('my awesome feature', function (Blueprint $feature) {
 
 Will generate the following classes:
 App\Features\MyAwesomeFeature;
-
 App\Tasks\DoSomething;
 App\Tasks\DoAnotherThing;
 App\Tasks\OneLastThing;
-
 App\Tests\Feature\MyAwesomeFeatureTest;
 App\Tests\Unit\DoSomethingTest;
 App\Tests\Unit\DoAnotherThingTest;
