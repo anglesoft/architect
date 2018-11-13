@@ -1,12 +1,11 @@
 {
     "name": "angle/architect",
-    "description": "Agile development suite for Laravel",
+    "description": "Agile development suite for Laravel.",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Benoit Villiere",
-            "email": "ben@angle.software"
         }
     ],
     "require": {
