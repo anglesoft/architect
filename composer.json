@@ -1,0 +1,20 @@
+{
+    "name": "angle/architect",
+    "description": "Agile development suite for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Benoit Villiere",
+            "email": "ben@angle.software"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Angle\\Architect\\": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}

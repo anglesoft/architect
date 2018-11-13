@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Features; // Prefix
+
+use Angle\Architect\Feature;
+
+class FeatureClassName extends Feature
+{
+    /**
+     * Handle feature.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        //
+    }
+}

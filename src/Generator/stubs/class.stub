@@ -1,0 +1,16 @@
+<?php
+
+{{use}}
+
+class {{name}} {{extends}}
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function {{method}}()
+    {
+        //
+    }
+}
