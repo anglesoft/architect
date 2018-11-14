@@ -10,13 +10,13 @@ class Feature extends Blueprint
 {
     protected $stub = 'feature.stub';
 
-    public function __construct(String $definition, Closure $callback = null, String $prefix = '', String $suffix = '')
+    public function __construct(String $description, Closure $callback = null, String $prefix = '', String $suffix = '')
     {
         // TODO config
         $prefix = '\\App\\Features\\' . $this->makeClassNameFromString($prefix);
         $suffix = 'Feature';
 
-        parent::__construct($definition, $callback, $prefix, $suffix);
+        parent::__construct($description, $callback, $prefix, $suffix);
     }
 
     public function task(String $task) : Blueprint
