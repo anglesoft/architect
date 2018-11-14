@@ -90,14 +90,15 @@ code;
         return $block;
     }
 
-    public function generate()
-    {
-        foreach ($this->instructions as $instruction) {
-            $blueprint = new Task($instruction['class']);
-            $blueprint->method('run', $instruction);
-            dump($blueprint);
-        }
-
-        dump($this);
-    }
+    // TODO: generate sub-tasks and tests
+    // public function generate()
+    // {
+    //     foreach ($this->instructions as $instruction) {
+    //         $blueprint = new Task($instruction['class']);
+    //         $blueprint->method('run', $instruction);
+    //         dump($blueprint);
+    //     }
+    //
+    //     dump($this);
+    // }
 }
