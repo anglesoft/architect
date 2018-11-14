@@ -30,7 +30,14 @@ class Feature extends Blueprint
         return $this;
     }
 
+    // Alias
     public function run(String $task) : Blueprint
+    {
+        return $this->task($task);
+    }
+
+    // Alias
+    public function will(String $task) : Blueprint
     {
         return $this->task($task);
     }
