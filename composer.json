@@ -3,9 +3,10 @@
     "description": "Agile development suite for Laravel.",
     "type": "library",
     "license": "MIT",
+    "minimum-stability": "dev",
     "authors": [
         {
-            "name": "Benoit Villiere",
+            "name": "Ben Villiere"
         }
     ],
     "require": {
@@ -15,5 +16,11 @@
             "Angle\\Architect\\": "src"
         }
     },
-    "minimum-stability": "dev"
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Angle\\Architect\\ArchitectServiceProvider"
+            ]
+        }
+    }
 }

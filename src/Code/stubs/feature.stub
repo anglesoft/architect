@@ -1,0 +1,19 @@
+<?php
+
+namespace {{namespace}};
+
+use Angle\Architect\Feature;
+use Angle\Architect\Task;
+
+class {{name}} extends Feature
+{
+    /**
+     * Handles {{description}}.
+     *
+     * @return void
+     */
+    public function handle({{parameter}})
+    {
+{{block}}
+    }
+}
