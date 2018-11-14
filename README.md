@@ -15,13 +15,23 @@ Tasks are meant to be the smallest pieces of logic within your app. They are res
 ### Sprints (WIP)
 Think of sprints as migrations for your features. It will generate features and tasks, and their respective tests. The generated code is boilerplate code: you'll still have to write your business logic within the generated classes, but it is intended to save you time and plan ahead which classes and methods you are going to build to fulfill the business objectives.
 
-Example of a sprint:
+First, generate a sprint file by running:
+```bash
+php artisan make:sprint "my awesome feature"
+```
+
+This will create sprint file under /sprints:
 ```php
-Architect::feature('my awesome feature', function (Blueprint $code) {
-    $code->will('do something')->expect('request')->return('foo');
-    $code->will('do another thing')->expect('foo')->return('bar');
-    $code->will('one last thing')->expect('foo')->return('baz');
-});
+...
+
+public function run()
+{
+    Architect::feature('my awesome feature', function (Blueprint $code) {
+        $code->will('do something')->expect('request')->return('foo');
+        $code->will('do another thing')->expect('foo')->return('bar');
+        $code->will('one last thing')->expect('foo')->return('baz');
+    });
+}
 ```
 Executing:
 ```bash
