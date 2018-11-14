@@ -1,5 +1,5 @@
 # Architect
-Agile development suite for Laravel.
+Software architecture toolkit for Laravel.
 
 > /!\ THIS PROJECT IS A WORK IN PROGRESS
 
