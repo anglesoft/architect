@@ -5,6 +5,9 @@ namespace Angle\Architect;
 use Illuminate\Support\Collection;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
+// TODO move to Traits\Implement and rename serve() to implement()
+// https://www.thesaurus.com/browse/accomplish
+
 trait ServesFeaturesTrait
 {
     use MarshalTrait;

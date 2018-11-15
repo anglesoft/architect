@@ -1,8 +1,8 @@
 <?php
 
+use Angle\Architect\Sprint;
 use Angle\Architect\Code\Blueprint;
 use Angle\Architect\Facades\Architect;
-use Angle\Architect\Sprint;
 
 class {{name}} extends Sprint
 {
@@ -14,9 +14,9 @@ class {{name}} extends Sprint
     public function run()
     {
         Architect::feature('{{description}}', function (Blueprint $code) {
-            $code->will('do something')->expect('request')->return('foo');
-            $code->will('do another thing')->expect('foo')->return('bar');
-            $code->will('one last thing')->expect('foo')->return('baz');
+            $code->task('do something')->expect('request')->return('foo');
+            $code->task('do another thing')->expect('foo')->return('bar');
+            $code->task('one last thing')->expect('bar')->return('baz');
         });
     }
 }

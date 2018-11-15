@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 
 use ReflectionClass;
 
+// TODO move to Traits\Taskable | RunsTasks and rename methods
+
 trait TaskDispatcherTrait
 {
     /**

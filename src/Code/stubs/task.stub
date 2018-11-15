@@ -1,20 +1,10 @@
 <?php
 
-namespace App\Tasks;
+namespace {{namespace}};
 
 use Angle\Architect\Task;
 
-class ClassName extends Task
+class {{name}} extends Task
 {
-    protected $string;
-
-    public function __construct(string $string)
-    {
-        $this->string = $string;
-    }
-
-    public function handle()
-    {
-        return $this->returning; //{{returning}}
-    }
+{{properties}}{{construct}}{{run}}
 }

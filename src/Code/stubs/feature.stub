@@ -2,8 +2,8 @@
 
 namespace {{namespace}};
 
-use Angle\Architect\Feature;
 use Angle\Architect\Task;
+use Angle\Architect\Feature;
 
 class {{name}} extends Feature
 {

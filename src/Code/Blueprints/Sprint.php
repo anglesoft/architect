@@ -2,15 +2,29 @@
 
 namespace Angle\Architect\Code\Blueprints;
 
-use Angle\Architect\Code\Blueprint;
 use Closure;
 use Illuminate\Support\Str;
+use Angle\Architect\Code\Blueprint;
 
 class Sprint extends Blueprint
 {
+    /**
+     * Reference to the stub file.
+     *
+     * @var string
+     */
     protected $stub = 'sprint.stub';
 
-    public function __construct(String $name, Closure $callback = null, String $prefix = '', String $suffix = '')
+    /**
+     * Create a new sprint blueprint instance.
+     *
+     * @todo Allow to configure pre/suffixes
+     * @param string $name
+     * @param Closure $callback
+     * @param string $prefix
+     * @param string $suffix
+     */
+    public function __construct(string $name, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
         parent::__construct($name, $callback, $prefix, $suffix);
 
@@ -23,7 +37,7 @@ class Sprint extends Blueprint
      *
      * @return string
      */
-    protected function getDatePrefix()
+    protected function getDatePrefix() : string
     {
         return date('Y_m_d_His');
     }

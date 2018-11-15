@@ -4,6 +4,7 @@ namespace Angle\Architect\Facades;
 
 use Angle\Architect\Code\Blueprint;
 use Angle\Architect\Code\Blueprints\Feature;
+use Angle\Architect\Database\SprintRepository;
 use Closure;
 
 class Architect
@@ -30,6 +31,11 @@ class Architect
     static function stop()
     {
         static::$sprint = false;
+    }
+
+    static function installed()
+    {
+        return with(new SprintRepository)->repositoryExists();
     }
 
     static function isSprinting()

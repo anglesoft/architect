@@ -2,24 +2,45 @@
 
 namespace Angle\Architect\Code\Blueprints;
 
+use Closure;
 use Angle\Architect\Code\Blueprint;
 use Angle\Architect\Code\Blueprints\Task;
-use Closure;
+use Angle\Architect\Code\Blueprints\Test;
 
 class Feature extends Blueprint
 {
+    /**
+     * Reference to the stub file.
+     *
+     * @var string
+     */
     protected $stub = 'feature.stub';
 
-    public function __construct(String $description, Closure $callback = null, String $prefix = '', String $suffix = '')
+    /**
+     * Creates a new blueprint
+     *
+     * @todo Allow to configure pre/suffixes
+     * @param string $description
+     * @param Closure $callback
+     * @param string $prefix
+     * @param string $suffix
+     */
+    public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
         // TODO config
         $prefix = '\\App\\Features\\' . $this->makeClassNameFromString($prefix);
-        $suffix = 'Feature';
+        // $suffix = 'Feature'; // CONFIG
 
         parent::__construct($description, $callback, $prefix, $suffix);
     }
 
-    public function task(String $task) : Blueprint
+    /**
+     * Adds task to instructions.
+     *
+     * @param  string    $task
+     * @return \Angle\Architect\Code\Blueprint
+     */
+    public function task(string $task) : Blueprint
     {
         $this->pushPreviousInstruction();
 
@@ -30,19 +51,34 @@ class Feature extends Blueprint
         return $this;
     }
 
-    // Alias
-    public function run(String $task) : Blueprint
+    /**
+     * Alias to the task method.
+     *
+     * @param  string    $task
+     * @return \Angle\Architect\Code\Blueprint
+     */
+    public function run(string $task) : Blueprint
     {
         return $this->task($task);
     }
 
-    // Alias
-    public function will(String $task) : Blueprint
+    /**
+     * Alias to the task method.
+     *
+     * @param  string    $task
+     * @return \Angle\Architect\Code\Blueprint
+     */
+    public function will(string $task) : Blueprint
     {
         return $this->task($task);
     }
 
-    public function getParameter() : String
+    /**
+     * Formats parameter as string.
+     *
+     * @return string
+     */
+    public function getParameter() : string
     {
         foreach ($this->instructions as $instruction) {
             if (isset($instruction['expect']))
@@ -52,7 +88,12 @@ class Feature extends Blueprint
         return '';
     }
 
-    public function getBlock() : String
+    /**
+     * Compose the feature handle method code block.
+     *
+     * @return string $block
+     */
+    public function getBlock() : string
     {
         $block = '';
 
@@ -97,15 +138,25 @@ code;
         return $block;
     }
 
-    // TODO: generate sub-tasks and tests
-    // public function generate()
-    // {
-    //     foreach ($this->instructions as $instruction) {
-    //         $blueprint = new Task($instruction['class']);
-    //         $blueprint->method('run', $instruction);
-    //         dump($blueprint);
-    //     }
-    //
-    //     dump($this);
-    // }
+    /**
+     * Registers blueprints
+     *
+     * @return void
+     */
+    public function registerBlueprints() : void
+    {
+        $test = (new Test($this->getName(), null, 'Feature'))
+            ->test('handle')
+            ->use($this);
+
+        foreach ($this->instructions as $instruction) {
+            $task = (new Task($instruction['class']))->method('run', $instruction);
+            $this->blueprint($task);
+
+            $test->test($instruction['class'], $instruction)
+                ->use($task);
+        }
+
+        $this->blueprint($test);
+    }
 }

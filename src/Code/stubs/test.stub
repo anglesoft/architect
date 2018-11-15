@@ -2,18 +2,38 @@
 
 namespace {{namespace}};
 
-use Angle\Architect\Feature;
-{{use}}
+use Mockery as m;
+use Tests\TestCase;{{use}}
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class {{class}} extends Feature
+class {{name}} extends TestCase
 {
+    public function tearDown()
+    {
+        m::close();
+    }
+
+    public function feature()
+    {
+
+    }
+
+    protected function getFeature()
+    {
+        return $this->feature;
+    }
+
     /**
-     * Handle feature.
+     * A basic test example.
      *
      * @return void
      */
-    public function handle()
+    public function testBasicTest()
     {
-        {{instructions}}
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
     }
+
+    {{test}}
 }

@@ -2,28 +2,61 @@
 
 namespace Angle\Architect\Code;
 
+use InvalidArgumentException;
 use Angle\Architect\Code\Blueprint;
 use Illuminate\Filesystem\Filesystem;
-use InvalidArgumentException;
 
 class Stub
 {
+    /**
+     * Blueprint instance.
+     *
+     * @var \Angle\Architect\Code\Blueprint
+     */
     protected $blueprint;
+
+    /**
+     * Path to the stub file.
+     *
+     * @var string
+     */
     protected $path;
+
+    /**
+     * Filesystem instance.
+     *
+     * @var \Illuminate\Filesystem\Filesystem
+     */
     protected $files;
+
+    /**
+     * Raw stub file content
+     * @var string
+     */
     protected $content;
-    protected $parts;
+
+    /**
+     * Parts extracted from the stub.
+     * @var array
+     */
+    protected $parts = [];
+
+    /**
+     * Generated code.
+     *
+     * @var string
+     */
     protected $code = '';
 
     /**
-     * Stub constructor
+     * Create a new stub instance.
      *
-     * @return void
+     * @param Blueprint $blueprint
      */
     public function __construct(Blueprint $blueprint)
     {
         $this->blueprint = $blueprint;
-        $this->path = __DIR__ . '/stubs/' . $this->blueprint->getStub();
+        $this->path = __DIR__ . '/stubs/' . $this->blueprint->getStubFileName();
         $this->files = app('files');
         $this->content = $this->files->get($this->path);
         $this->parts = $this->parse();
@@ -31,50 +64,7 @@ class Stub
     }
 
     /**
-     * Replace parts
-     *
-     * @return string
-     */
-    public function replace($key, $value, $code) : string
-    {
-        return str_replace('{{'. $key .'}}', $value, $code);
-    }
-
-    /**
-     * Parse the stub to find parts needing replacement.
-     *
-     * @return array
-     */
-    public function parse() : array
-    {
-        $count = preg_match_all('/{{((?:[^}]|}[^}])+)}}/', $this->content, $matches);
-
-        if ($count == 0)
-            throw new InvalidArgumentException("Stub file [{$this->path}] doesn't have any part to replace.");
-
-        return $matches[1];
-    }
-
-    /**
-     * Compiles the stub and returns the generated code.
-     *
-     * @return string
-     */
-    public function compile() : string
-    {
-        $this->code = $this->content;
-
-        foreach ($this->parts as $key) {
-            $getter = 'get' . ucfirst($key);
-            $value = $this->blueprint->{$getter}();
-            $this->code = $this->replace($key, $value, $this->code);
-        }
-
-        return $this->code;
-    }
-
-    /**
-     * Get the path to the stub.
+     * The path to the to-be-generated file.
      *
      * @return string
      */
@@ -131,5 +121,50 @@ class Stub
     public function getParts() : array
     {
         return $this->parts;
+    }
+
+    /**
+     * Replace parts from the stub file.
+     *
+     * @param  string $key
+     * @param  string $value
+     * @param  string $code
+     * @return string
+     */
+    public function replace(string $key, string $value, string $code) : string
+    {
+        return str_replace('{{'. $key .'}}', $value, $code);
+    }
+
+    /**
+     * Parse the stub to find {{parts}} needing replacement.
+     *
+     * @return array
+     */
+    public function parse() : array
+    {
+        preg_match_all('/{{((?:[^}]|}[^}])+)}}/', $this->content, $matches);
+
+        return $matches[1];
+    }
+
+    /**
+     * Replace parts from content and return generated code.
+     * Each stub file can have its own parts to replace as
+     * long as a matching getter on the blueprint exists.
+     *
+     * @return string
+     */
+    public function compile() : string
+    {
+        $this->code = $this->content;
+
+        foreach ($this->parts as $key) {
+            $getter = 'get' . ucfirst($key);
+            $value = $this->blueprint->{$getter}();
+            $this->code = $this->replace($key, $value, $this->code);
+        }
+
+        return $this->code;
     }
 }

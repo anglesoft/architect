@@ -2,8 +2,10 @@
 
 namespace Angle\Architect\Console;
 
+use Angle\Architect\Sprint;
+use Angle\Architect\Code\Blueprints\Sprint as Blueprint;
+use Angle\Architect\Code\Builder;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 
 class MakeSprintCommand extends Command
 {
@@ -22,63 +24,48 @@ class MakeSprintCommand extends Command
     protected $description = 'Create a new sprint file';
 
     /**
+     * The sprint instance.
+     *
+     * @var \Angle\Architect\Sprint
+     */
+    protected $sprint;
+
+    /**
      * Create a new command instance.
      *
+     * @param  \Angle\Architect\Sprint  $sprint
      * @return void
      */
-    public function __construct()
+    public function __construct(Sprint $sprint)
     {
         parent::__construct();
+
+        $this->sprint = $sprint;
     }
 
     /**
      * Execute the console command.
      *
+     * @todo   sanitize argument (alpha-num)
      * @return mixed
      */
     public function handle()
     {
-        $name = $this->argument('name'); // TODO sanitize argument (alpha-num)
+        $name = $this->argument('name');
 
-        $blueprint = new \Angle\Architect\Code\Blueprints\Sprint($name);
-        $builder = new \Angle\Architect\Code\Builder($blueprint);
+        $blueprint = new Blueprint($name);
+        $builder = new Builder($blueprint);
 
-        $sprints = $this->getSprintFiles('sprints');
-
-        $this->requireFiles($sprints);
+        // Sprint classes being out of scope,
+        // we need to require them manually
+        $this->sprint->requireSprintFiles();
 
         if ($blueprint->classExists()) {
-            throw new \ErrorException("Class already exists [{$blueprint->getName()}]");
+            return $this->line("<error>Class already exists:</error> {$blueprint->getName()}");
         }
 
-        $path = $builder->save();
+        $file = $builder->save();
 
-        $this->info("Sprint file [$path] sucessfully created.");
-    }
-
-    /**
-     * Get all of the sprint files in a given path.
-     *
-     * @param  string|array  $paths
-     * @return array
-     */
-    public function getSprintFiles($paths)
-    {
-        return Collection::make($paths)->flatMap(function ($path) {
-            return app('files')->glob($path . '/*_*.php');
-        })->all();
-    }
-
-    /**
-     * Require in all the sprint files in a given path.
-     *
-     * @param  array   $files
-     * @return void
-     */
-    public function requireFiles(array $files)
-    {
-        foreach ($files as $file) {
-            app('files')->requireOnce($file);
-        }
+        return $this->line("<info>Created Sprint:</info> {$file}");
     }
 }

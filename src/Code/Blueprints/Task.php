@@ -2,44 +2,111 @@
 
 namespace Angle\Architect\Code\Blueprints;
 
-use Angle\Architect\Code\Blueprint;
 use Closure;
+use Angle\Architect\Code\Blueprint;
 
 class Task extends Blueprint
 {
+    /**
+     * Reference to the stub file.
+     *
+     * @var string
+     */
     protected $stub = 'task.stub';
 
-    public function __construct(String $definition, Closure $callback = null, String $prefix = '', String $suffix = '')
+    /**
+     * Create a new task blueprint instance.
+     *
+     * @todo Allow to configure pre/suffixes
+     * @param string $description
+     * @param Closure $callback
+     * @param string $prefix
+     * @param string $suffix
+     */
+    public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
         // TODO config
         $prefix = '\\App\\Tasks\\' . $this->makeClassNameFromString($prefix);
-        $suffix = 'Task';
+        // $suffix = 'Task'; CONFIG
 
-        parent::__construct($definition, $callback, $prefix, $suffix);
+        parent::__construct($description, $callback, $prefix, $suffix);
     }
 
-    public function task(String $task) : Blueprint
+    private function get($key) : string
     {
-        $this->pushPreviousInstruction();
-
-        $this->method = ['name' => 'handle'];
-
-        $this->instruction['class'] = $this->makeClassNameFromString($task, 'Task'); // TODO config
-
-        return $this;
+        return $this->methods['run'][$key];
     }
 
-    public function run(String $task) : Blueprint
+    private function has($key) : bool
     {
-        return $this->task($task);
+        return isset($this->methods['run'][$key]);
     }
 
-    public function generate()
+    public function getReturn() : string
     {
-        dump($this);
+        if ( ! $this->has('return'))
+            return '//';
 
-        // foreach ($this->methods as $method) {
-        //     dump($method);
-        // }
+        $return = $this->get('return');
+
+        return "return \${$return};";
+    }
+
+    public function getProperties() : string
+    {
+        if ( ! $this->has('expect'))
+            return '';
+
+        $property = $this->get('expect');
+
+        return "    protected \${$property};
+
+";
+    }
+
+    public function getExpect() : string
+    {
+        if ( ! $this->has('expect'))
+            return '';
+
+        $expect = $this->get('expect');
+
+        return "\${$expect}";
+    }
+
+    public function getConstruct() : string
+    {
+        if ( ! $this->has('expect'))
+            return '';
+
+        $property = $this->get('expect');
+
+
+        return "    /**
+     * Create a new task instance.
+     *
+     * @return void
+     */
+    public function __construct(\${$property})
+    {
+        \$this->{$property} = \${$property};
+    }
+
+";
+    }
+
+    public function getRun() : string
+    {
+        $return = $this->getReturn();
+
+        return "    /**
+     * Execute the task.
+     *
+     * @return mixed
+     */
+    public function run()
+    {
+        $return
+    }";
     }
 }

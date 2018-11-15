@@ -2,25 +2,30 @@
 
 namespace Angle\Architect\Code;
 
+use Angle\Architect\Code\Compass;
+use Angle\Architect\Code\Stub;
 use Closure;
 use Illuminate\Support\Str;
 
 class Blueprint
 {
+    protected $name = '';
+    protected $namespace = '';
+    protected $blueprints = []; // A blueprint can hold other Blueprints
+    protected $uses = [];
     protected $stub = 'class.stub';
     protected $prefix = ''; // \Directory\ClassName
     protected $suffix = ''; // ClassNameSuffix
     protected $file = '';
     protected $path = '';
+    protected $paths = [];
     protected $description = '';
-    protected $name = '';
-    protected $namespace = '';
     protected $methods = [];
     protected $method = []; // Current method
     protected $instructions = []; // Stores all instructions
     protected $instruction = []; // Stores only the current instruction
 
-    public function __construct(String $description, Closure $callback = null, String $prefix = '', String $suffix = '')
+    public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
         $this->description = trim($description);
         $this->prefix = $this->makeClassNameFromString($prefix);
@@ -37,77 +42,116 @@ class Blueprint
         $this->pushPreviousInstruction();
     }
 
-    public function __toString()
+    public function __toString() : string
     {
-        return $this->generate();
+        return $this->getCode();
     }
 
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getClassName()
+    public function getClassName() : string
     {
         return $this->getNamespace() . '\\' . $this->getName();
     }
 
-    public function getNamespace()
+    public function getNamespace() : string
     {
         return $this->namespace;
     }
 
-    public function getStub()
+    public function getStubFileName() : string
     {
         return $this->stub;
     }
 
-    public function getFileName()
+    public function getFileName() : string
     {
         return $this->file;
     }
 
-    public function getPath()
+    public function getPath() : string
     {
         return $this->path;
     }
 
-    public function getInstructions()
+    public function getPaths() : array
+    {
+        $this->paths[] = $this->path;
+
+        $blueprints = $this->getBlueprints();
+
+        if ( ! empty($blueprints)) {
+            foreach ($blueprints as $key => $blueprint) {
+                $this->paths[] = $blueprint->getPath();
+            }
+        }
+
+        return $this->paths;
+    }
+
+    public function getInstructions() : array
     {
         return $this->instructions;
     }
 
-    public function getBlock() : String
+    public function getBlock() : string
     {
         return '//';
     }
 
-    public function getMethods()
+    public function getMethods() : array
     {
         return $this->methods;
     }
 
-    public function getDescription() : String
+    public function getDescription() : string
     {
         return $this->description;
     }
 
-    public function getUse() : String
+    public function getUse() : string
+    {
+        if (count($this->uses) == 0)
+            return '';
+
+        $code = '';
+
+        foreach ($this->uses as $use) {
+            $code .= "
+use {$use};";
+        }
+
+        return $code;
+    }
+
+    public function getParameter() : string
     {
         return '';
     }
 
-    public function getParameter() : String
+    public function getBlueprints() : array
     {
-        return '';
+        // Ensure all blueprints are properly built
+        if ( ! $this->hasBlueprints())
+            $this->registerBlueprints();
+
+        return $this->blueprints;
     }
 
-    public function classExists()
+    public function getCode() : string
+    {
+        return $this->code = (new Stub($this))->getCode();
+    }
+
+    protected function classExists() : bool
     {
         return class_exists($this->getName());
     }
 
-    public function makeClassNameFromString(String $string, String $prefix = '', String $suffix = '')
+    protected function makeClassNameFromString(string $string, string $prefix = '', string $suffix = '') : string
     {
         if ( ! $this->isClassName($string)) { //  && ! is_null($string)
             $string = $this->makeStudlyString($string);
@@ -117,7 +161,7 @@ class Blueprint
         return $string;
     }
 
-    public function makeMethodNameFromString(String $string, String $prefix = '', String $suffix = '')
+    protected function makeMethodNameFromString(string $string, string $prefix = '', string $suffix = '') : string
     {
         if ($prefix != '') {
             $prefix = Str::camel($prefix);
@@ -130,7 +174,7 @@ class Blueprint
         return Str::camel($prefix . $string . $suffix);
     }
 
-    public function makeNamespaceFromString(String $string)
+    protected function makeNamespaceFromString(string $string) : string
     {
         $string = $this->makeClassNameFromString($string);
         $string = ltrim($string, '\\');
@@ -139,7 +183,7 @@ class Blueprint
         return $string;
     }
 
-    public function makeFileName(string $string = null) : string
+    protected function makeFileName(string $string = null) : string
     {
         if ($string != null) {
             $this->file = $string;
@@ -152,22 +196,27 @@ class Blueprint
         return $this->file;
     }
 
-    public function makePath()
+    protected function makePath() : string
     {
         return $this->path = app_path($this->getFileName());
     }
 
-    public function isClassName(String $string)
+    protected function isClassName(string $string) : bool
     {
-        return str_contains('\\', $string);
+        return str_contains('\\', $string) && $string != '';
     }
 
-    public function isSentence(String $string)
+    protected function isSentence(string $string) : bool
     {
         return str_contains(' ', trim($string));
     }
 
-    public function makeStudlyString(String $string)
+    protected function isBlueprint($suspect) : bool
+    {
+        return is_a($suspect, Blueprint::class);
+    }
+
+    protected function makeStudlyString(string $string) : string
     {
         $string = trim($string);
 
@@ -185,16 +234,29 @@ class Blueprint
         return $string;
     }
 
-    public function pushPreviousInstruction()
+    protected function pushPreviousInstruction() : void
     {
         if ( ! empty($this->method) && ! empty($this->instruction))
             $this->methods[$this->method['name']]['instructions'][] = $this->instruction;
 
         if ( ! empty($this->instruction))
             $this->instructions[] = $this->instruction;
+
+        $this->clearCache();
     }
 
-    public function addClassNamePrefix(String $name, String $prefix = '') : String
+    protected function clearCache() : void
+    {
+        $this->instruction = [];
+        $this->method = [];
+    }
+
+    protected function pushUse($class) : void
+    {
+        $this->uses[] = $class;
+    }
+
+    protected function addClassNamePrefix(string $name, string $prefix = '') : string
     {
         if ($prefix != '')
             $name = Str::studly($prefix) . '\\' . $name;
@@ -202,7 +264,7 @@ class Blueprint
         return $name;
     }
 
-    public function addClassNameSuffix(String $name, String $suffix = '') : String
+    protected function addClassNameSuffix(string $name, string $suffix = '') : string
     {
         if ($suffix != '')
             $name = $name . Str::studly($suffix);
@@ -210,9 +272,53 @@ class Blueprint
         return $name;
     }
 
-    public function method(String $method, Array $options = []) : Blueprint
+    /**
+     * Add blueprint to array.
+     *
+     * @param  Blueprint $blueprint
+     * @return Blueprint
+     */
+    protected function pushBlueprint(Blueprint $blueprint) : Blueprint
     {
-        $name = $this->makeMethodNameFromString($method);
+        return $this->blueprints[] = $blueprint;
+    }
+
+    /**
+     * Verifies if there are any sub blueprints.
+     *
+     * @return bool
+     */
+    protected function hasBlueprints() : bool
+    {
+        return count($this->blueprints) > 0;
+    }
+
+    /**
+     * Add blueprint to blueprint.
+     *
+     * @param  Blueprint $blueprint
+     * @return Blueprint
+     */
+    public function blueprint(Blueprint $blueprint) : Blueprint
+    {
+        $this->pushBlueprint($blueprint);
+
+        return $this;
+    }
+
+    /**
+     * Add a new method to the class.
+     *
+     * @param  string    $string
+     * @param  array     $options
+     * @return Blueprint
+     */
+    public function method(string $string, Array $options = []) : Blueprint
+    {
+        $this->pushPreviousInstruction();
+
+        $name = $this->makeMethodNameFromString($string);
+
         $this->method['name'] = $name;
 
         foreach ($options as $key => $value)
@@ -223,7 +329,32 @@ class Blueprint
         return $this;
     }
 
-    public function will(String $instruction) : Blueprint
+    /**
+     * Use class.
+     *
+     * @param  string|Blueprint $class
+     * @return Blueprint
+     */
+    public function use($class) : Blueprint
+    {
+        if ($this->isBlueprint($class)) {
+            $this->pushUse($class->getClassName());
+        }
+
+        if ($this->isClassName($class)) {
+            $this->pusUse($class);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add instruction.
+     *
+     * @param  string    $instruction
+     * @return Blueprint
+     */
+    public function will(string $instruction) : Blueprint
     {
         $this->pushPreviousInstruction();
 
@@ -232,50 +363,42 @@ class Blueprint
         return $this;
     }
 
-    public function expect($parameter) // TODO expect array;
+    /**
+     * Add parameter.
+     *
+     * @todo   Let $parameter to be an array, so we can pass multiple parameters.
+     * @todo   Sanitize parameter with a method like makeVariableNameFromString
+     *
+     * @param  string $parameter
+     * @return Blueprint
+     */
+    public function expect($parameter)
     {
-        $this->instruction['expect'] = $parameter; // TODO makeVariableNameFromString
+        $this->instruction['expect'] = $parameter;
 
         return $this;
     }
 
-    public function return($parameter) // TODO return list() multiple parameters
+    /**
+     * Add return parameter.
+     *
+     * @param  string $parameter
+     * @return Blueprint
+     */
+    public function return($parameter)
     {
-        $this->instruction['return'] = $parameter; // TODO makeVariableNameFromString
+        $this->instruction['return'] = $parameter;
 
         return $this;
     }
 
-    public function generate()
+    /**
+     * Allows to organize sub blueprints
+     *
+     * @return void
+     */
+    public function registerBlueprints() : void
     {
-        $output = '<?php';
-        $output .= "\n";
-        $output .= 'namespace App\\Features';
-
-        if ($this->prefix)
-            $output .= '\\' . ucfirst($this->prefix);
-
-        $output .= ';';
-
-        $output .= "    public function handle() {";
-
-        foreach ($this->instructions as $task) {
-            $output .= "\t";
-
-            if ($task['return'])
-                $output .= '$' . $task['return'] . ' = ';
-
-            $output .= '$this->run(' . $task['class'];
-
-            if ($task['expect'])
-                $output .= ', $'.$task['expect'];
-
-            $output .= ')';
-        }
-
-        $output .= "\n";
-        $output .= "}";
-
-        return $output;
+        //
     }
 }

@@ -3,7 +3,7 @@
 namespace Angle\Architect\Console;
 
 use Angle\Architect\Facades\Architect;
-use Angle\Architect\Sprint\Runner;
+use Angle\Architect\Sprint;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 
@@ -17,33 +17,33 @@ class SprintCommand extends Command
      * @var string
      */
     protected $signature = 'sprint {--pretend : Simulates the operation and displays the list of would-be created files}
-                {--force : Force overwritting of existing files}';
+                {--force : Force overwritting of existing files}'; // TODO add option to generate tests or not
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Runs pending sprints.';
+    protected $description = 'Run pending sprints';
 
     /**
-     * The runner instance.
+     * The sprint instance.
      *
-     * @var \Angle\Architect\Sprint\Runner
+     * @var \Angle\Architect\Sprint
      */
-    protected $runner;
+    protected $sprint;
 
     /**
      * Create a new sprint command instance.
      *
-     * @param  \Angle\Architect\Sprint\Runner  $runner
+     * @param  \Angle\Architect\Sprint  $sprint
      * @return void
      */
-    public function __construct(Runner $runner)
+    public function __construct(Sprint $sprint)
     {
         parent::__construct();
 
-        $this->runner = $runner;
+        $this->sprint = $sprint;
     }
 
     /**
@@ -51,7 +51,7 @@ class SprintCommand extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle() : void
     {
         Architect::sprint();
 
@@ -62,9 +62,14 @@ class SprintCommand extends Command
             Architect::force();
 
         dump([
-            'sprint' => $this->runner,
+            'sprint' => $this->sprint,
             'pretend' => Architect::isPretending(),
             'force' => Architect::isForcing(),
         ]);
+
+        // Find file(s) to run
+        // Compile those files
+        // Save batch to db
+        // Output result
     }
 }

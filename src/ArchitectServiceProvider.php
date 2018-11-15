@@ -2,10 +2,6 @@
 
 namespace Angle\Architect;
 
-use Angle\Architect\Code\Blueprint;
-use Angle\Architect\Code\Builder;
-use Angle\Architect\Console\SprintCommand;
-use Angle\Architect\Console\MakeSprintCommand;
 use Illuminate\Support\ServiceProvider;
 
 class ArchitectServiceProvider extends ServiceProvider
@@ -15,7 +11,7 @@ class ArchitectServiceProvider extends ServiceProvider
      *
      * @var bool
      */
-    protected $defer = false;
+    // protected $defer = false;
 
     /**
      * Bootstrap services.
@@ -26,8 +22,9 @@ class ArchitectServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                SprintCommand::class,
-                MakeSprintCommand::class
+                Console\SprintCommand::class,
+                Console\MakeSprintCommand::class,
+                Console\ArchitectInstallCommand::class
             ]);
         }
     }
@@ -39,19 +36,14 @@ class ArchitectServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // $this->registerBuilder();
-    }
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/architect.php', 'architect'
+        );
 
-    /**
-     * Register the code builder.
-     *
-     * @return void
-     */
-    protected function registerBuilder()
-    {
-        // $this->app->singleton('architect.sprinter', function ($app) {
-        //     return new Builder($app['files']);
-        // });
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/architect.php' => config_path('architect.php'),
+            ], 'architect-config');
+        }
     }
-
 }
