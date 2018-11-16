@@ -1,7 +1,7 @@
 # Architect
 Software architecture toolkit for Laravel.
 
-> /!\ THIS PROJECT IS A WORK IN PROGRESS
+> /!\ WORK IN PROGRESS
 
 ## Concepts
 Architect helps artisans to structure, generate and write maintainable code from human-readable migration-like files called "sprints". It is built on top of the popular [Laravel Framework](https://github.com/laravel), and implement concepts form the [Lucid Architecture](https://github.com/lucid-architecture).
