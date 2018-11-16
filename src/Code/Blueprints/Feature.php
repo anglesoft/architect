@@ -112,7 +112,7 @@ class Feature extends Blueprint
 
             if (isset($task['expect'])) {
                 // $line .= ', $'.$task['expect'];
-                $line .= ', [\'' . $task['expect'] . ' => $' . $task['expect'] . '\']';
+                $line .= ', [\'' . $task['expect'] . '\' => $' . $task['expect'] . ']';
             }
 
             $line .= ');';
