@@ -26,7 +26,7 @@ class Sprint extends Blueprint
      */
     public function __construct(string $name, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
-        parent::__construct($name, $callback, $prefix, $suffix);
+        parent::__construct($name, $callback, $prefix, $suffix = 'Sprint');
 
         $this->file = 'sprints/' . $this->getDatePrefix() . '_' . Str::snake($name) . '.php';
         $this->path = base_path($this->getFileName());

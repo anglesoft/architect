@@ -146,7 +146,7 @@ use {$use};";
         return $this->code = (new Stub($this))->getCode();
     }
 
-    protected function classExists() : bool
+    public function classExists() : bool
     {
         return class_exists($this->getName());
     }
