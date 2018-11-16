@@ -7,7 +7,7 @@ Software architecture toolkit for Laravel.
 
 When your code base starts to grow, it becomes harder and harder to release new features without breaking something along the way. Architect's mission is to help you organize your code in a way that is easily maintainable and testable, while letting you release new features harmlessly. 
 
-Architect is built on top of the popular [Laravel Framework](https://github.com/laravel) by Taylor Otwell, and implements concepts form the awesome [Lucid Architecture](https://github.com/lucid-architecture) by Abed Halawi.
+Architect is built on top of the awesome [Laravel Framework](https://github.com/laravel) by Taylor Otwell, and implements concepts form the mind opening [Lucid Architecture](https://github.com/lucid-architecture) by Abed Halawi.
 
 ## Concepts
 
