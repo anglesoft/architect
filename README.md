@@ -68,5 +68,5 @@ class MyAwesomeFeature extends Feature
     }
 }
 ```
-## Why I built Architect instead of using Lucid
+## Why build Architect instead of using Lucid?
 When I heard [Abed say at Laracon EU "No more legacy code"](https://www.youtube.com/watch?v=wSnM4JkyxPw), I was totally seduced by that idea. But when I discovered the Lucid Architecture, it didn't quite fit my routine: I had to move too many files here and there and tear off too many roots from my code base in order to adopt it. It would have been tedious to adopt this package. Also, I wanted to keep the Laravel folders in place as I love how the vanilla framework is organized. So I built Architect, which simply adds App\Features and App\Tasks folders in your app/ directory.
