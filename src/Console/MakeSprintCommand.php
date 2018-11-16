@@ -2,9 +2,10 @@
 
 namespace Angle\Architect\Console;
 
-use Angle\Architect\Sprint;
 use Angle\Architect\Code\Blueprints\Sprint as Blueprint;
-use Angle\Architect\Code\Builder;
+use Angle\Architect\Code\Compiler;
+use Angle\Architect\Database\SprintRepository as Repository;
+use Angle\Architect\Sprint;
 use Illuminate\Console\Command;
 
 class MakeSprintCommand extends Command
@@ -14,7 +15,7 @@ class MakeSprintCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:sprint {name? : The name of the sprint}';
+    protected $signature = 'make:sprint {name : The name of the sprint}';
 
     /**
      * The console command description.
@@ -31,16 +32,25 @@ class MakeSprintCommand extends Command
     protected $sprint;
 
     /**
+     * The repository instance.
+     *
+     * @var \Angle\Architect\Database\SprintRepository
+     */
+    protected $repository;
+
+    /**
      * Create a new command instance.
      *
      * @param  \Angle\Architect\Sprint  $sprint
+     * @param  \Angle\Architect\Database\SprintRepository  $repository
      * @return void
      */
-    public function __construct(Sprint $sprint)
+    public function __construct(Sprint $sprint, Repository $repository)
     {
         parent::__construct();
 
         $this->sprint = $sprint;
+        $this->repository = $repository;
     }
 
     /**
@@ -54,7 +64,7 @@ class MakeSprintCommand extends Command
         $name = $this->argument('name');
 
         $blueprint = new Blueprint($name);
-        $builder = new Builder($blueprint);
+        $compiler = new Compiler($blueprint);
 
         // Sprint classes being out of scope,
         // we need to require them manually
@@ -64,7 +74,8 @@ class MakeSprintCommand extends Command
             return $this->line("<error>Class already exists:</error> {$blueprint->getName()}");
         }
 
-        $file = $builder->save();
+        $stack = $compiler->build();
+        $file = pathinfo(end($stack), PATHINFO_FILENAME);
 
         return $this->line("<info>Created Sprint:</info> {$file}");
     }

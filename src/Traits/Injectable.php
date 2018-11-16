@@ -1,18 +1,16 @@
 <?php
 
-namespace Angle\Architect;
+namespace Angle\Architect\Traits;
 
 use ArrayAccess;
 use Exception;
 use ReflectionClass;
 use ReflectionParameter;
 
-// TODO move to Traits\Injector Nurse and rename marshal() to inject()
-
-trait MarshalTrait
+trait Injectable
 {
     /**
-     * Marshal a command from the given array accessible object.
+     * Inject a command from the given array accessible object.
      *
      * @param string       $command
      * @param \ArrayAccess $source
@@ -20,7 +18,7 @@ trait MarshalTrait
      *
      * @return mixed
      */
-    protected function marshal($command, ArrayAccess $source, array $extras = [])
+    protected function inject($command, ArrayAccess $source, array $extras = [])
     {
         $injected = [];
 
@@ -36,7 +34,7 @@ trait MarshalTrait
     }
 
     /**
-     * Get a parameter value for a marshaled command.
+     * Get a parameter value for an injected command.
      *
      * @param string               $command
      * @param \ArrayAccess         $source

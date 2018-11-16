@@ -2,10 +2,10 @@
 
 namespace Angle\Architect\Code\Blueprints;
 
-use Closure;
 use Angle\Architect\Code\Blueprint;
 use Angle\Architect\Code\Blueprints\Task;
 use Angle\Architect\Code\Blueprints\Test;
+use Closure;
 
 class Feature extends Blueprint
 {
@@ -111,12 +111,13 @@ class Feature extends Blueprint
             $line .= '$this->run(' . $prefix . $task['class'] . '::class';
 
             if (isset($task['expect'])) {
-                $line .= ', $'.$task['expect'];
+                // $line .= ', $'.$task['expect'];
+                $line .= ', [\'' . $task['expect'] . ' => $' . $task['expect'] . '\']';
             }
 
             $line .= ');';
 
-            $return = '';
+            // $return = '';
 
             $block .= <<<code
         $line
@@ -139,11 +140,11 @@ code;
     }
 
     /**
-     * Registers blueprints
+     * Registers blueprints before compilation
      *
      * @return void
      */
-    public function registerBlueprints() : void
+    public function compose() : Blueprint
     {
         $test = (new Test($this->getName(), null, 'Feature'))
             ->test('handle')
@@ -158,5 +159,7 @@ code;
         }
 
         $this->blueprint($test);
+
+        return parent::compose();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Angle\Architect\Console;
 
+use Angle\Architect\Database\SprintRepository as Repository;
 use Illuminate\Console\Command;
-use Angle\Architect\Database\SprintRepository;
 
 class ArchitectInstallCommand extends Command
 {
@@ -34,7 +34,7 @@ class ArchitectInstallCommand extends Command
      * @param  \Angle\Architect\Database\SprintRepository  $repository
      * @return void
      */
-    public function __construct(SprintRepository $repository)
+    public function __construct(Repository $repository)
     {
         parent::__construct();
 

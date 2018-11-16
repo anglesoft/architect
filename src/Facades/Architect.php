@@ -4,62 +4,175 @@ namespace Angle\Architect\Facades;
 
 use Angle\Architect\Code\Blueprint;
 use Angle\Architect\Code\Blueprints\Feature;
-use Angle\Architect\Database\SprintRepository;
+use Angle\Architect\Code\Compiler;
+use Angle\Architect\Database\SprintRepository as Repository;
 use Closure;
 
 class Architect
 {
-    public static $sprint = false;
-    public static $pretend = false;
-    public static $force = false;
+    /**
+     * Enabling forcing allows to overwrite existing files.
+     *
+     * @var bool
+     */
+    public static $forcing = false;
 
-    static function describe($feature, Closure $callback = null, $prefix = '')
+    /**
+     * Toggled to true while running sprints.
+     *
+     * @var bool
+     */
+    public static $sprinting = false;
+
+    /**
+     * Enabling pretending will show you the would-be created files.
+     *
+     * @var bool
+     */
+    public static $pretending = false;
+
+    public static $stack = [];
+
+    private static function hook(Blueprint $blueprint) : void
+    {
+        if (static::sprinting()) { // TODO || static::reverting()) { // running in console
+            static::$stack[] = static::compile($blueprint, static::pretending(), static::forcing());
+        }
+    }
+
+    /**
+     * Returns the stack array containing file references.
+     *
+     * @return array
+     */
+    public static function stack() : array
+    {
+        return static::$stack;
+    }
+
+    /**
+     * Compiles a new blueprint.
+     *
+     * @param  \Angle\Architect\Code\Blueprint $blueprint
+     * @param  bool $pretend
+     * @param  bool $force
+     * @return array
+     */
+    public static function compile(Blueprint $blueprint, bool $pretend = false, bool $force = false) : array
+    {
+        return (new Compiler($blueprint))->build($pretend, $force);
+    }
+
+    /**
+     * Draws a new blueprint.
+     *
+     * @param  string $feature
+     * @param  Closure $callback
+     * @param  string $prefix
+     * @return \Angle\Architect\Code\Blueprint
+     */
+    public static function describe(string $feature, Closure $callback = null, string $prefix = '') : Blueprint
     {
         return new Blueprint($feature, $callback, $prefix);
     }
 
-    static function feature($feature, Closure $callback = null, $prefix = '')
+    /**
+     * Draws a new feature blueprint.
+     *
+     * @todo improve hook to compiler
+     *
+     * @param  string $feature
+     * @param  Closure $callback
+     * @param  string $prefix
+     * @return \Angle\Architect\Code\Blueprint
+     */
+    public static function feature(string $feature, Closure $callback = null, string $prefix = '') : Blueprint
     {
-        return new Feature($feature, $callback, $prefix);
+        $blueprint = new Feature($feature, $callback, $prefix);
+
+        static::hook($blueprint);
+
+        return $blueprint;
     }
 
-    static function sprint()
+    /**
+     * Checks if the package is installed.
+     *
+     * @return bool
+     */
+    public static function installed() : bool
     {
-        static::$sprint = true;
+        return (new Repository)->repositoryExists();
     }
 
-    static function stop()
+    /**
+     * Sets sprinting to true.
+     *
+     * @return void
+     */
+    public static function sprint() : void
     {
-        static::$sprint = false;
+        static::$sprinting = true;
     }
 
-    static function installed()
+    /**
+     * Sets sprinting to false.
+     *
+     * @return void
+     */
+    public static function stop() : void
     {
-        return with(new SprintRepository)->repositoryExists();
+        static::$sprinting = false;
     }
 
-    static function isSprinting()
+    /**
+     * Checks if the app is currently running sprint(s).
+     *
+     * @return boolean
+     */
+    public static function sprinting() : bool
     {
-        return static::$sprint === true;
+        return static::$sprinting === true;
     }
 
-    static function pretend()
+    /**
+     * Sets pretending as true.
+     *
+     * @return void
+     */
+    public static function pretend() : void
     {
-        static::$pretend = true;
+        static::$pretending = true;
     }
 
-    static function isPretending()
+    /**
+     * Checks if sprint is currently pretending to run.
+     * It won't write any file while pretending is on.
+     *
+     * @return bool [description]
+     */
+    public static function pretending() : bool
     {
-        return static::$pretend === true;
+        return static::$pretending === true;
     }
 
-    static function force()
+    /**
+     * Sets forcing to true.
+     *
+     * @return void
+     */
+    public static function force() : void
     {
-        static::$force = true;
+        static::$forcing = true;
     }
 
-    static function isForcing()
+    /**
+     * Checks if forces writing of files.
+     *
+     * @return bool
+     */
+    public static function forcing() : bool
     {
-        return static::$force === true;
+        return static::$forcing === true;
     }
 }

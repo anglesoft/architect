@@ -2,8 +2,8 @@
 
 namespace Angle\Architect\Database;
 
-use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
+// use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 
 class SprintRepository // implements MigrationRepositoryInterface
 {
@@ -42,6 +42,21 @@ class SprintRepository // implements MigrationRepositoryInterface
     }
 
     /**
+     * Create a new sprint entry in the database.
+     *
+     * @param string $sprint
+     * @return bool
+     */
+    public function create(string $sprint) : bool
+    {
+        return $this->table()
+            ->insert([
+                'sprint' => $sprint,
+                'batch' => $this->getNextBatchNumber()
+            ]);
+    }
+
+    /**
      * Get the completed sprints.
      *
      * @return array
@@ -49,9 +64,14 @@ class SprintRepository // implements MigrationRepositoryInterface
     public function getRan()
     {
         return $this->table()
-                ->orderBy('batch', 'asc')
-                ->orderBy('sprint', 'asc')
-                ->pluck('sprint')->all();
+            ->orderBy('batch', 'asc')
+            ->orderBy('sprint', 'asc')
+            ->pluck('sprint')->all();
+    }
+
+    public function hasRun($sprint)
+    {
+        return in_array($sprint, $this->getRan());
     }
 
     /**
@@ -60,13 +80,14 @@ class SprintRepository // implements MigrationRepositoryInterface
      * @param  int  $steps
      * @return array
      */
-    public function getSprints($steps)
+    public function getSprints() // (int $steps = 0)
     {
         $query = $this->table()->where('batch', '>=', '1');
 
         return $query->orderBy('batch', 'desc')
-                     ->orderBy('sprint', 'desc')
-                     ->take($steps)->get()->all();
+            ->orderBy('sprint', 'desc')
+            // ->take($steps)
+            ->get()->all();
     }
 
     /**
@@ -89,9 +110,9 @@ class SprintRepository // implements MigrationRepositoryInterface
     public function getSprintBatches()
     {
         return $this->table()
-                ->orderBy('batch', 'asc')
-                ->orderBy('sprint', 'asc')
-                ->pluck('batch', 'sprint')->all();
+            ->orderBy('batch', 'asc')
+            ->orderBy('sprint', 'asc')
+            ->pluck('batch', 'sprint')->all();
     }
 
     /**

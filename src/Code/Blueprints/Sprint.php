@@ -2,9 +2,9 @@
 
 namespace Angle\Architect\Code\Blueprints;
 
+use Angle\Architect\Code\Blueprint;
 use Closure;
 use Illuminate\Support\Str;
-use Angle\Architect\Code\Blueprint;
 
 class Sprint extends Blueprint
 {

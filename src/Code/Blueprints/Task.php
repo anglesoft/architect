@@ -2,8 +2,8 @@
 
 namespace Angle\Architect\Code\Blueprints;
 
-use Closure;
 use Angle\Architect\Code\Blueprint;
+use Closure;
 
 class Task extends Blueprint
 {

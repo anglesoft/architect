@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 
 class ArchitectServiceProvider extends ServiceProvider
 {
+    protected $defer = false;
+
     /**
      * Bootstrap services.
      *

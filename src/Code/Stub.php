@@ -2,9 +2,9 @@
 
 namespace Angle\Architect\Code;
 
-use InvalidArgumentException;
 use Angle\Architect\Code\Blueprint;
 use Illuminate\Filesystem\Filesystem;
+use InvalidArgumentException;
 
 class Stub
 {

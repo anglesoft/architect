@@ -2,8 +2,8 @@
 
 namespace Angle\Architect\Code;
 
-use Angle\Architect\Code\Compass;
 use Angle\Architect\Code\Stub;
+use Angle\Architect\Code\Compass;
 use Closure;
 use Illuminate\Support\Str;
 
@@ -77,7 +77,7 @@ class Blueprint
         return $this->path;
     }
 
-    public function getPaths() : array
+    public function getPaths() : array // makePaths?
     {
         $this->paths[] = $this->path;
 
@@ -135,8 +135,8 @@ use {$use};";
     public function getBlueprints() : array
     {
         // Ensure all blueprints are properly built
-        if ( ! $this->hasBlueprints())
-            $this->registerBlueprints();
+        // if ( ! $this->hasBlueprints())
+        //     $this->compose();
 
         return $this->blueprints;
     }
@@ -181,6 +181,25 @@ use {$use};";
         $string = rtrim($string, '\\');
 
         return $string;
+    }
+
+    protected function sanitizeString(string $string)
+    {
+        return preg_replace('/\W+/', ' ', $string);
+    }
+
+    protected function makePropertyNameFromString(string $string) : string
+    {
+        $case = config('architect.compiler.properties');
+        $string = $this->sanitizeString($string);
+
+        if ($case == 'camel') {
+            $string = Str::camel($string);
+        } else {
+            $string = Str::snake($string);
+        }
+
+        return $string; //preg_replace('/\W+/', '', $string);
     }
 
     protected function makeFileName(string $string = null) : string
@@ -288,7 +307,7 @@ use {$use};";
      *
      * @return bool
      */
-    protected function hasBlueprints() : bool
+    public function hasBlueprints() : bool
     {
         return count($this->blueprints) > 0;
     }
@@ -374,7 +393,7 @@ use {$use};";
      */
     public function expect($parameter)
     {
-        $this->instruction['expect'] = $parameter;
+        $this->instruction['expect'] = $this->makePropertyNameFromString($parameter);
 
         return $this;
     }
@@ -387,18 +406,20 @@ use {$use};";
      */
     public function return($parameter)
     {
-        $this->instruction['return'] = $parameter;
+        $this->instruction['return'] = $this->makePropertyNameFromString($parameter);
 
         return $this;
     }
 
     /**
-     * Allows to organize sub blueprints
+     * Pre-compiler hook.
      *
      * @return void
      */
-    public function registerBlueprints() : void
+    public function compose() : Blueprint
     {
-        //
+        $this->getPaths();
+
+        return $this;
     }
 }
