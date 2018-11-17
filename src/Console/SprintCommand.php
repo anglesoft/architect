@@ -2,7 +2,7 @@
 
 namespace Angle\Architect\Console;
 
-use Angle\Architect\Facades\Architect;
+use Angle\Architect\Code\Compiler;
 use Angle\Architect\Database\SprintRepository as Repository;
 use Angle\Architect\Sprint;
 use Illuminate\Console\Command;
@@ -35,6 +35,13 @@ class SprintCommand extends Command
     protected $sprint;
 
     /**
+     * The repository instance.
+     *
+     * @var \Angle\Architect\Database\SprintRepository
+     */
+    protected $repository;
+
+    /**
      * Create a new sprint command instance.
      *
      * @param  \Angle\Architect\Sprint  $sprint
@@ -56,27 +63,20 @@ class SprintCommand extends Command
      */
     public function handle() : void
     {
-        Architect::sprint();
+        Compiler::sprint();
 
         if ($this->option('pretend') === true)
-            Architect::pretend();
+            Compiler::pretend();
 
         if ($this->option('force') === true)
-            Architect::force();
-
-        // dump([
-        //     'sprint' => $this->sprint,
-        //     'repository' => get_class_methods($this->repository),
-        //     'pretending' => Architect::isPretending(),
-        //     'forcing' => Architect::isForcing(),
-        //     'sprints' => $this->repository->getSprints(),
-        //     'ran' => $this->repository->getRan(),
-        //     'files' => $this->sprint->getSprintFiles('sprints'),
-        // ]);
+            Compiler::force();
 
         $files = $this->sprint->getSprintFiles('sprints');
 
-        $i = 0;
+        if (count($files) == 0) {
+            $this->info('Nothing to run.');
+            exit;
+        }
 
         foreach ($files as $file) {
             $name = $this->sprint->getFileName($file, $path = config('architect.sprints.path'));
@@ -94,33 +94,18 @@ class SprintCommand extends Command
             $path = $this->sprint->getPath($name, $path);
             $sprint = $this->sprint->resolve($path);
 
-            // $class = $sprint->run();
-
+            // This will invoke the compiler implicitly,
+            // as all blueprints will be registered.
             $sprint->run();
 
-            $stack = Architect::$stack[$i++];
-
-            foreach ($stack as $file) {
+            foreach (Compiler::stack() as $file) {
                 if ($this->option('pretend') == false) {
+                    // $this->repository->create($file); // TODO persist to db
                     $this->line("<info>Created:</info> {$file}");
                 } else {
                     $this->line("<fg=cyan;bg=black>Would create:</> {$file}");
                 }
             }
-
-            // Architect::$stack);
-
-            // $this->line("<comment>Creating:</comment> {$class}");
-
-            // $this->sprint->run($name);
         }
-
-
-        // $this->repository->create($file);
-
-        // Find file(s) to run
-        // Compile those files
-        // Save batch to db
-        // Output result
     }
 }

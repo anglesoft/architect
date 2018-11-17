@@ -12,14 +12,19 @@ class Sprint
      *
      * @return void
      */
-    public function run()
+    public function run() // : void
     {
         //
     }
 
-    public function revert()
+    /**
+     * Revert the sprint.
+     *
+     * @return void
+     */
+    public function revert() // : void
     {
-        // Get run code and delete all files created
+        //
     }
 
     /**
@@ -62,7 +67,7 @@ class Sprint
 
     /**
      * Requires sprint file.
-     * 
+     *
      * @param string $file
      */
     public function requireSprint(string $file) : void

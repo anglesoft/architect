@@ -91,10 +91,11 @@ class Feature extends Blueprint
         $this->uses = [];
 
         $blueprints = $this->getBlueprints();
-        $prefix = config('architect.compiler.namespaces.tasks'). '\\';
+        $prefix = config('architect.compiler.namespaces.tasks');
 
         foreach ($blueprints as $blueprint) {
-            $this->uses[] = $prefix . $blueprint->getName();
+            if ($blueprint->getNamespace() == $prefix)
+                $this->uses[] = $prefix . '\\' . $blueprint->getName();
         }
 
         return $this->uses;
@@ -109,10 +110,12 @@ class Feature extends Blueprint
         if (count($uses) == 0)
             return $string;
 
+        $string .= "\n";
+
         foreach ($uses as $class) {
             $string .= "use $class;";
 
-            if ($uses != end($uses))
+            if ($uses != end($uses) && count($uses) > 1)
                 $string .= "\n";
         }
 
