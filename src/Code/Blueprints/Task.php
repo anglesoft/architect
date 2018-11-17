@@ -17,7 +17,6 @@ class Task extends Blueprint
     /**
      * Create a new task blueprint instance.
      *
-     * @todo Allow to configure pre/suffixes
      * @param string $description
      * @param Closure $callback
      * @param string $prefix
@@ -25,8 +24,7 @@ class Task extends Blueprint
      */
     public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
-        // TODO config
-        $prefix = '\\App\\Tasks\\' . $this->makeClassNameFromString($prefix);
+        $prefix = config('architect.compiler.namespaces.tasks') . '\\' . $this->makeClassNameFromString($prefix);
         // $suffix = 'Task'; CONFIG
 
         parent::__construct($description, $callback, $prefix, $suffix);

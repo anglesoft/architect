@@ -48,6 +48,8 @@ class ArchitectInstallCommand extends Command
      */
     public function handle()
     {
+        // TODO create directories
+
         if ( ! $this->repository->repositoryExists()) {
             $this->repository->setSource($this->argument('database'));
             $this->repository->createRepository();

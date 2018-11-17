@@ -19,7 +19,6 @@ class Feature extends Blueprint
     /**
      * Creates a new blueprint
      *
-     * @todo Allow to configure pre/suffixes
      * @param string $description
      * @param Closure $callback
      * @param string $prefix
@@ -27,8 +26,7 @@ class Feature extends Blueprint
      */
     public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
-        // TODO config
-        $prefix = '\\App\\Features\\' . $this->makeClassNameFromString($prefix);
+        $prefix = config('architect.compiler.namespaces.features') . '\\' . $this->makeClassNameFromString($prefix);
         // $suffix = 'Feature'; // CONFIG
 
         parent::__construct($description, $callback, $prefix, $suffix);
@@ -88,6 +86,39 @@ class Feature extends Blueprint
         return '';
     }
 
+    public function getUses() : array
+    {
+        $this->uses = [];
+
+        $blueprints = $this->getBlueprints();
+        $prefix = config('architect.compiler.namespaces.tasks'). '\\';
+
+        foreach ($blueprints as $blueprint) {
+            $this->uses[] = $prefix . $blueprint->getName();
+        }
+
+        return $this->uses;
+    }
+
+    public function getUse() : string
+    {
+        $string = '';
+
+        $uses = $this->getUses();
+
+        if (count($uses) == 0)
+            return $string;
+
+        foreach ($uses as $class) {
+            $string .= "use $class;";
+
+            if ($uses != end($uses))
+                $string .= "\n";
+        }
+
+        return $string;
+    }
+
     /**
      * Compose the feature handle method code block.
      *
@@ -97,43 +128,35 @@ class Feature extends Blueprint
     {
         $block = '';
 
-        $i = 1;
-        $count = count($this->instructions);
-        $prefix = '\\App\\Tasks\\';
-
         foreach ($this->instructions as $task) {
             $line = '';
+            $return = isset($task['return']) ? $task['return'] : null;
+            $expect = isset($task['expect']) ? $task['expect'] : null;
+            $class = $task['class'];
+            $last = $task == end($this->instructions);
 
-            if (isset($task['return'])) {
-                $line .= '$' . $task['return'] . ' = ';
-            }
+            if ($return)
+                $line .= '$' . $return . ' = ';
 
-            $line .= '$this->run(' . $prefix . $task['class'] . '::class';
+            $line .= '$this->run(' . $class . '::class';
 
-            if (isset($task['expect'])) {
-                // $line .= ', $'.$task['expect'];
-                $line .= ', [\'' . $task['expect'] . '\' => $' . $task['expect'] . ']';
-            }
+            if ($expect)
+                $line .= ', [\'' . $expect . '\' => $' . $expect . ']';
 
             $line .= ');';
-
-            // $return = '';
 
             $block .= <<<code
         $line
 
 code;
 
-            if (($i == $count) && isset($task['return'])) {
-                $line = 'return $' . $task['return'] .';';
-
+            if ($last && $return) {
+                $line = 'return $' . $return .';';
                 $block .= <<<code
 
         $line
 code;
             }
-
-            $i++;
         }
 
         return $block;

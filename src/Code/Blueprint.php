@@ -12,6 +12,7 @@ class Blueprint
     protected $name = '';
     protected $namespace = '';
     protected $blueprints = []; // A blueprint can hold other Blueprints
+    protected $use = '';
     protected $uses = [];
     protected $stub = 'class.stub';
     protected $prefix = ''; // \Directory\ClassName
@@ -90,6 +91,11 @@ class Blueprint
         }
 
         return $this->paths;
+    }
+
+    public function getUses() : array
+    {
+        return $this->uses;
     }
 
     public function getInstructions() : array
