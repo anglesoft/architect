@@ -72,6 +72,16 @@ class Compiler
     }
 
     /**
+     * Returns the stack array containing file references.
+     *
+     * @return array
+     */
+    public static function reset() : void
+    {
+        static::$stack = [];
+    }
+
+    /**
      * Sets sprinting to true.
      *
      * @return void
@@ -206,7 +216,7 @@ class Compiler
             $name = $blueprint->getClassName();
 
             if ( ! $force && $blueprint->classExists())
-                throw new InvalidArgumentException("Class {$name} already exists.");
+                continue; //throw new InvalidArgumentException("Class {$name} already exists.");
 
             $path = $blueprint->getPath();
             $code = $blueprint->getCode();

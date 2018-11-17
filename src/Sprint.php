@@ -12,7 +12,7 @@ class Sprint
      *
      * @return void
      */
-    public function run() // : void
+    public function run() : void
     {
         //
     }
@@ -22,7 +22,7 @@ class Sprint
      *
      * @return void
      */
-    public function revert() // : void
+    public function revert() : void
     {
         //
     }
@@ -92,17 +92,6 @@ class Sprint
     }
 
     /**
-     * Returns file name without exthension.
-     *
-     * @param  string $file
-     * @return string
-     */
-    public function getFileName(string $file, string $path) : string
-    {
-        return str_replace('/', '', str_replace($path, '', str_replace('.php', '', $file)));
-    }
-
-    /**
      * Returns class name from file.
      *
      * @param  string $file
@@ -111,6 +100,17 @@ class Sprint
     public function getClassName(string $file) : string
     {
         return str_replace('.php', '', Str::studly(implode('_', array_slice(explode('_', $file), 4)))) . 'Sprint';
+    }
+
+    /**
+     * Returns file name without exthension.
+     *
+     * @param  string $file
+     * @return string
+     */
+    public function getFileName(string $file, string $path) : string
+    {
+        return str_replace('.php', '', str_replace($path . '/', '', $file));
     }
 
     /**

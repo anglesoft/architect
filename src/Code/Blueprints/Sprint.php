@@ -28,7 +28,7 @@ class Sprint extends Blueprint
     {
         parent::__construct($name, $callback, $prefix, $suffix = 'Sprint');
 
-        $this->file = 'sprints/' . $this->getDatePrefix() . '_' . Str::snake($name) . '.php';
+        $this->file = 'sprints/' . $this->getDatePrefix() . '_' . Str::snake($this->description) . '.php';
         $this->path = base_path($this->getFileName());
     }
 

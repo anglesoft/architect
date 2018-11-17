@@ -56,8 +56,14 @@ class Task extends Blueprint
             return '';
 
         $property = $this->get('expect');
+        $name = ucfirst($property);
 
-        return "    protected \${$property};
+        return "    /**
+     * $name variable.
+     *
+     * @var [type]
+     */
+    protected \${$property};
 
 ";
     }

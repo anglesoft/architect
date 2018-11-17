@@ -15,10 +15,11 @@ class SprintCommand extends Command
     /**
      * The name and signature of the console command.
      *
+     * @todo Add option to disable tests
      * @var string
      */
     protected $signature = 'sprint {--pretend : Simulates the operation and displays the list of would-be created files}
-                {--force : Force overwritting of existing files}'; // TODO add option to generate tests or not
+                {--force : Force overwritting of existing files}';
 
     /**
      * The console command description.
@@ -78,6 +79,8 @@ class SprintCommand extends Command
             exit;
         }
 
+        $runs = 0;
+
         foreach ($files as $file) {
             $name = $this->sprint->getFileName($file, $path = config('architect.sprints.path'));
 
@@ -94,18 +97,26 @@ class SprintCommand extends Command
             $path = $this->sprint->getPath($name, $path);
             $sprint = $this->sprint->resolve($path);
 
+            Compiler::reset();
+
             // This will invoke the compiler implicitly,
             // as all blueprints will be registered.
             $sprint->run();
 
+            // $this->repository->create($name);
+            $runs++;
+
             foreach (Compiler::stack() as $file) {
                 if ($this->option('pretend') == false) {
-                    // $this->repository->create($file); // TODO persist to db
                     $this->line("<info>Created:</info> {$file}");
                 } else {
                     $this->line("<fg=cyan;bg=black>Would create:</> {$file}");
                 }
             }
+        }
+
+        if ($runs == 0) {
+            $this->info('Nothing to run.');
         }
     }
 }

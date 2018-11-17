@@ -28,7 +28,7 @@ class Blueprint
 
     public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
-        $this->description = trim($description);
+        $this->description = $this->sanitizeString($description);
         $this->prefix = $this->makeClassNameFromString($prefix);
         $this->suffix = $this->makeClassNameFromString($suffix);
         $this->name = $this->makeClassNameFromString($this->description, '', $this->suffix);
@@ -140,10 +140,6 @@ use {$use};";
 
     public function getBlueprints() : array
     {
-        // Ensure all blueprints are properly built
-        // if ( ! $this->hasBlueprints())
-        //     $this->compose();
-
         return $this->blueprints;
     }
 
@@ -152,9 +148,14 @@ use {$use};";
         return $this->code = (new Stub($this))->getCode();
     }
 
+    /**
+     * Check if class exists within the namespace.
+     *
+     * @return bool
+     */
     public function classExists() : bool
     {
-        return class_exists($this->getName());
+        return class_exists($this->getNamespace() . '\\' . $this->getName());
     }
 
     protected function makeClassNameFromString(string $string, string $prefix = '', string $suffix = '') : string
@@ -189,9 +190,15 @@ use {$use};";
         return $string;
     }
 
-    protected function sanitizeString(string $string)
+    /**
+     * Removes special characters.
+     *
+     * @param  string $string
+     * @return string
+     */
+    protected function sanitizeString(string $string) : string
     {
-        return preg_replace('/\W+/', ' ', $string);
+        return str_replace('_', ' ', trim(preg_replace('/\W+/', ' ', $string)));
     }
 
     protected function makePropertyNameFromString(string $string) : string
@@ -205,9 +212,15 @@ use {$use};";
             $string = Str::snake($string);
         }
 
-        return $string; //preg_replace('/\W+/', '', $string);
+        return $string;
     }
 
+    /**
+     * Make the file name.
+     *
+     * @param  string $string
+     * @return string
+     */
     protected function makeFileName(string $string = null) : string
     {
         if ($string != null) {
@@ -221,19 +234,36 @@ use {$use};";
         return $this->file;
     }
 
+    /**
+     * Make the path to the file.
+     *
+     * @return string
+     */
     protected function makePath() : string
     {
         return $this->path = app_path($this->getFileName());
     }
 
+    /**
+     * Checks if input is a class name.
+     *
+     * @param  string $string
+     * @return bool
+     */
     protected function isClassName(string $string) : bool
     {
         return str_contains('\\', $string) && $string != '';
     }
 
+    /**
+     * Checks if input is a sentence.
+     *
+     * @param  string $string
+     * @return bool
+     */
     protected function isSentence(string $string) : bool
     {
-        return str_contains(' ', trim($string));
+        return str_contains(trim($string), [' ', '.', '!', '?']);
     }
 
     protected function isBlueprint($suspect) : bool
@@ -257,6 +287,16 @@ use {$use};";
         }
 
         return $string;
+    }
+
+    /**
+     * Makes a sentence from a studly case string
+     * @param  string $string
+     * @return string
+     */
+    protected function makeSentenceFromStudlyString(string $string) : string
+    {
+        return strtolower(preg_replace('~(\p{Ll})(\p{Lu})~u','${1} ${2}', $string));
     }
 
     protected function pushPreviousInstruction() : void

@@ -30,6 +30,7 @@ class Test extends Blueprint
 
         $this->file = 'tests/' . Str::studly($prefix) . '/' . $this->getName() . 'Test' . '.php';
         $this->path = base_path($this->getFileName());
+        $this->name = $this->name . 'Test';
         $this->namespace = 'Tests\\' . Str::studly($prefix);
     }
 
@@ -52,6 +53,30 @@ class Test extends Blueprint
      */
     public function getTest() : string
     {
-        return '';
+        if (count($this->methods) == 0)
+            return '';
+
+        $test = '';
+
+        foreach ($this->methods as $method => $instruction) {
+            $description = 'Testing ' . str_replace('test ', '', $this->makeSentenceFromStudlyString($method));
+            // $expect = isset($instruction['expect']) ?
+
+            $test .= "    /**
+     * $description.
+     *
+     * @return void
+     */
+    public function $method()
+    {";
+
+            $test .= "
+        \$this->assertTrue(true);
+    }
+
+";
+        }
+
+        return $test;
     }
 }
