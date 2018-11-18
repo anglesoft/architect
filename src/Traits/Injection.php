@@ -7,7 +7,7 @@ use Exception;
 use ReflectionClass;
 use ReflectionParameter;
 
-trait Injectable
+trait Injection
 {
     /**
      * Inject a command from the given array accessible object.

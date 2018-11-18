@@ -115,7 +115,8 @@ class Feature extends Blueprint
         foreach ($uses as $class) {
             $string .= "use $class;";
 
-            if ($uses != end($uses) && count($uses) > 1)
+            // if ($uses != end($uses) && count($uses) > 1)
+            if (next($uses) && count($uses) > 1)
                 $string .= "\n";
         }
 

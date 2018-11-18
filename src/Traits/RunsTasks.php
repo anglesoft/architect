@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 
-trait Taskable
+trait RunsTasks
 {
     /**
      * Beautifier function to be called instead of the laravel function dispatchFromArray.
@@ -18,7 +18,7 @@ trait Taskable
      * @param array                          $extra
      * @return mixed
      */
-    public function task($task, $arguments = [], $extra = [])
+    public function run($task, $arguments = [], $extra = [])
     {
         if ($arguments instanceof Request) {
             $result = $this->dispatch($this->inject($task, $arguments, $extra));
@@ -31,6 +31,19 @@ trait Taskable
         }
 
         return $result;
+    }
+
+    /**
+     * Alias to the run method.
+     *
+     * @param string                         $task
+     * @param array|\Illuminate\Http\Request $arguments
+     * @param array                          $extra
+     * @return mixed
+     */
+    public function task($task, $arguments = [], $extra = [])
+    {
+        return $this->run($task, $arguments, $extra);
     }
 
     /**

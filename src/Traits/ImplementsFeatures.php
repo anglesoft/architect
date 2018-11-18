@@ -5,9 +5,9 @@ namespace Angle\Architect\Traits;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
 
-trait Featurable
+trait ImplementsFeatures
 {
-    use Injectable;
+    use Injection;
     use DispatchesJobs;
 
     /**

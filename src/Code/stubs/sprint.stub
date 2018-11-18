@@ -1,8 +1,8 @@
 <?php
 
-use Angle\Architect\Sprint;
 use Angle\Architect\Code\Blueprint;
 use Angle\Architect\Facades\Architect;
+use Angle\Architect\Sprint;
 
 class {{name}} extends Sprint
 {

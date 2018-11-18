@@ -59,22 +59,21 @@ class Test extends Blueprint
         $test = '';
 
         foreach ($this->methods as $method => $instruction) {
-            $description = 'Testing ' . str_replace('test ', '', $this->makeSentenceFromStudlyString($method));
-            // $expect = isset($instruction['expect']) ?
+            $expect = isset($instruction['expect']) ? $instruction['expect'] : '';
 
-            $test .= "    /**
-     * $description.
-     *
-     * @return void
-     */
-    public function $method()
+            $test .= "\n    public function {$method}(";
+
+            if ($expect)
+                $test .= "\${$expect}";
+
+            $test .=")
     {";
-
             $test .= "
         \$this->assertTrue(true);
-    }
-
-";
+    }";
+            if (next($this->methods)) {
+                $test .= "\n";
+            }
         }
 
         return $test;
