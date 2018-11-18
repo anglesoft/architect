@@ -47,6 +47,19 @@ trait RunsTasks
     }
 
     /**
+     * Alias to the run method.
+     *
+     * @param string                         $task
+     * @param array|\Illuminate\Http\Request $arguments
+     * @param array                          $extra
+     * @return mixed
+     */
+    public function perform($task, $arguments = [], $extra = [])
+    {
+        return $this->run($task, $arguments, $extra);
+    }
+
+    /**
      * Run the given job in the given queue.
      *
      * @param string     $task

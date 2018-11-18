@@ -12,7 +12,7 @@ class Sprint
      *
      * @return void
      */
-    public function run() : void
+    public function run()
     {
         //
     }
@@ -22,7 +22,7 @@ class Sprint
      *
      * @return void
      */
-    public function revert() : void
+    public function revert()
     {
         //
     }

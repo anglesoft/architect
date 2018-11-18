@@ -11,7 +11,7 @@ class {{name}} extends Sprint
      *
      * @return void
      */
-    public function run() : void
+    public function run()
     {
         Architect::feature('{{description}}', function (Blueprint $code) {
             $code->task('do something')->expect('request')->return('foo');
