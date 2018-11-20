@@ -34,11 +34,5 @@ class ArchitectServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/architect.php', 'architect'
         );
-
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../config/architect.php' => config_path('architect.php'),
-            ], 'architect-config');
-        }
     }
 }

@@ -2,10 +2,7 @@
 
 namespace Angle\Architect\Database;
 
-use Illuminate\Database\ConnectionResolverInterface as Resolver;
-// use Illuminate\Database\Migrations\MigrationRepositoryInterface;
-
-class SprintRepository // implements MigrationRepositoryInterface
+class SprintRepository
 {
     /**
      * The database connection resolver instance.
@@ -35,9 +32,10 @@ class SprintRepository // implements MigrationRepositoryInterface
      * @param  string  $table
      * @return void
      */
-    public function __construct() //Resolver $resolver, $table)
+    public function __construct(string $table = null, string $connection = null)
     {
-        $this->table = 'sprints';
+        $this->table = $table != null ? $table : config('architect.database.table');
+        $this->connection = $connection != null ? $connection : config('architect.database.connection');
         $this->resolver = app('db');
     }
 
@@ -137,7 +135,7 @@ class SprintRepository // implements MigrationRepositoryInterface
      */
     public function delete($record)
     {
-        $this->table()->where('migration', $record->sprint)->delete();
+        $this->table()->where('sprint', $record->sprint)->delete();
     }
 
     /**
@@ -161,7 +159,7 @@ class SprintRepository // implements MigrationRepositoryInterface
     }
 
     /**
-     * Create the migration repository data store.
+     * Create the sprint repository data store.
      *
      * @return void
      */
@@ -192,7 +190,7 @@ class SprintRepository // implements MigrationRepositoryInterface
     }
 
     /**
-     * Get a query builder for the migration table.
+     * Get a query builder for the sprint table.
      *
      * @return \Illuminate\Database\Query\Builder
      */
@@ -230,5 +228,16 @@ class SprintRepository // implements MigrationRepositoryInterface
     public function setSource($name)
     {
         $this->connection = $name;
+    }
+
+    /**
+     * Set the database table.
+     *
+     * @param  string  $name
+     * @return void
+     */
+    public function setTable($name)
+    {
+        $this->table = $name;
     }
 }

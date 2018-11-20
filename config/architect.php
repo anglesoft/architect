@@ -18,8 +18,8 @@ return [
     'compiler' => [
         'properties' => 'snake', // 'camel'
         'namespaces' => [
-            'tasks' => 'App\\Tasks',
-            'features' => 'App\\Features',
+            'features' => 'App\Features',
+            'tasks' => 'App\Tasks',
         ]
     ],
 

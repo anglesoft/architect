@@ -4,9 +4,9 @@ namespace Angle\Architect\Console;
 
 use Angle\Architect\Code\Blueprints\Sprint as Blueprint;
 use Angle\Architect\Code\Compiler;
+use Angle\Architect\Console\Command;
 use Angle\Architect\Database\SprintRepository as Repository;
 use Angle\Architect\Sprint;
-use Illuminate\Console\Command;
 
 class MakeSprintCommand extends Command
 {
@@ -61,6 +61,8 @@ class MakeSprintCommand extends Command
      */
     public function handle()
     {
+        $this->ensureIsInstalled();
+
         $name = $this->argument('name');
 
         $blueprint = new Blueprint($name);
@@ -68,7 +70,7 @@ class MakeSprintCommand extends Command
 
         // Sprint classes being out of scope,
         // we need to require them manually
-        $this->sprint->requireSprintFiles();
+        $this->sprint->requireSprintFiles(config('architect.sprints.path'));
 
         if ($blueprint->classExists()) {
             return $this->line("<error>Class already exists:</error> {$blueprint->getName()}");

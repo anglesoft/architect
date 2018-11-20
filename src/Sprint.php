@@ -59,9 +59,9 @@ class Sprint
      * @param  array   $files
      * @return void
      */
-    public function requireSprintFiles() : void
+    public function requireSprintFiles(string $path) : void
     {
-        $files = $this->getSprintFiles('sprints');
+        $files = $this->getSprintFiles($path);
         $this->requireFiles($files);
     }
 

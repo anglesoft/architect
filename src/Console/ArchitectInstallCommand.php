@@ -3,7 +3,7 @@
 namespace Angle\Architect\Console;
 
 use Angle\Architect\Database\SprintRepository as Repository;
-use Illuminate\Console\Command;
+use Angle\Architect\Console\Command;
 
 class ArchitectInstallCommand extends Command
 {
@@ -12,14 +12,14 @@ class ArchitectInstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'architect:install {database? : The database connection to use}';
+    protected $signature = 'architect:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create the sprint repository';
+    protected $description = 'Architect package installer';
 
     /**
      * The repository instance.
@@ -48,14 +48,45 @@ class ArchitectInstallCommand extends Command
      */
     public function handle()
     {
-        // TODO create directories
+        if ($this->installed() && ! $this->confirm('Architect is already installed. Continue anyway?'))
+            exit;
+
+        // Create configuration file.
+        $config = file_get_contents(__DIR__.'/../../config/architect.php');
+
+        $connection = $this->ask('Which database connection will store the sprints?', 'mysql');
+        $config = str_replace("'connection' => env('DB_CONNECTION', 'mysql')", "'connection' => env('DB_CONNECTION', '{$connection}')", $config);
+
+        $table = $this->ask('Which database table will store the sprints?', 'sprints');
+        $config = str_replace("'table' => 'sprints'", "'table' => '{$table}'", $config);
+
+        $path = $this->ask('Where should we store sprint files?', 'sprints');
+        $config = str_replace("'path' => 'sprints'", "'path' => '{$path}'", $config);
+
+        $namespace = $this->ask('What will be the features namespace?', 'App\Features');
+        $config = str_replace("'features' => 'App\Features'", "'features' => '{$namespace}'", $config);
+
+        $namespace = $this->ask('What will be the tasks namespace?', 'App\Tasks');
+        $config = str_replace("'tasks' => 'App\Tasks'", "'tasks' => '{$namespace}'", $config);
+
+        $case = $this->ask('Which case to use for class properties? (snake|camel)', 'snake');
+        $config = str_replace("'properties' => 'snake'", "'properties' => '{$case}'", $config);
+
+        $file = base_path('config/architect.php');
+
+        file_put_contents($file, $config);
+
+        $this->line('<comment>Created config:</comment>   config/architect.php');
+
+        $this->callSilent('config:clear');
+        $this->callSilent('config:cache');
+
+        $this->repository->setTable($table);
+        $this->repository->setSource($connection);
 
         if ( ! $this->repository->repositoryExists()) {
-            $this->repository->setSource($this->argument('database'));
             $this->repository->createRepository();
-            $this->info('Sprint table created successfully.');
-        } else {
-            $this->error('Sprint table already exists.');
+            $this->line("<comment>Created table:</comment>  {$table}");
         }
     }
 }

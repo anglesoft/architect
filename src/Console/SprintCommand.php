@@ -3,15 +3,12 @@
 namespace Angle\Architect\Console;
 
 use Angle\Architect\Code\Compiler;
+use Angle\Architect\Console\Command;
 use Angle\Architect\Database\SprintRepository as Repository;
 use Angle\Architect\Sprint;
-use Illuminate\Console\Command;
-use Illuminate\Console\ConfirmableTrait;
 
 class SprintCommand extends Command
 {
-    use ConfirmableTrait;
-
     /**
      * The name and signature of the console command.
      *
@@ -64,6 +61,8 @@ class SprintCommand extends Command
      */
     public function handle() : void
     {
+        $this->ensureIsInstalled();
+
         Compiler::sprint();
 
         if ($this->option('pretend') === true)
@@ -72,7 +71,8 @@ class SprintCommand extends Command
         if ($this->option('force') === true)
             Compiler::force();
 
-        $files = $this->sprint->getSprintFiles('sprints');
+        $sprints_path = config('architect.sprints.path');
+        $files = $this->sprint->getSprintFiles($sprints_path);
 
         if (count($files) == 0) {
             $this->info('Nothing to run.');
@@ -82,7 +82,7 @@ class SprintCommand extends Command
         $runs = 0;
 
         foreach ($files as $file) {
-            $name = $this->sprint->getFileName($file, $path = config('architect.sprints.path'));
+            $name = $this->sprint->getFileName($file, $sprints_path);
 
             if ($this->repository->hasRun($name)) {
                 continue;
@@ -103,7 +103,7 @@ class SprintCommand extends Command
             // as all blueprints will be registered.
             $sprint->run();
 
-            // $this->repository->create($name);
+            $this->repository->create($name);
             $runs++;
 
             foreach (Compiler::stack() as $file) {
