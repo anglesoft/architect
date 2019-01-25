@@ -7,8 +7,6 @@ When your code base starts to grow, it becomes harder and harder to release new 
 
 Architect is built on top of the awesome [Laravel Framework](https://github.com/laravel) by Taylor Otwell, and implements concepts form the mind opening [Lucid Architecture](https://github.com/lucid-architecture) by Abed Halawi.
 
-> ⚠️ Work in progress (first release coming soon).
-
 ## Concepts
 
 ### Features
