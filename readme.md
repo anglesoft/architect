@@ -1,72 +1,99 @@
 # Architect
-Software architecture toolkit for Laravel.
+Software architecture library for the Laravel Framework.
 
 ## Introduction
 
-When your code base starts to grow, it becomes harder and harder to release new features without breaking something along the way. Architect's mission is to help you organize your code in a way that is easily maintainable and testable, while letting you release new features harmlessly. 
+Architect provides an expressive way to organize and generate boilerplate classes that will hold your application's business logic. The goal of this package is to implement a component-oriented back-end architecture. By using decoupled components, you may reuse parts of your code accross multiple services (Controllers and various API endpoints).
 
-Architect is built on top of the awesome [Laravel Framework](https://github.com/laravel) by Taylor Otwell, and implements concepts form the mind opening [Lucid Architecture](https://github.com/lucid-architecture) by Abed Halawi.
+Architect will create tests for each classes it generates, encouraging a Test-Driven Development approach within your organization.
 
-> ⚠️ Work in progress (first release coming soon).
+## Installation
 
-## Concepts
+### Composer
 
-### Features
-Features are classes meant to unclog your controllers. Each feature runs a sequence of tasks, making it easy to read and maintain. They can either be implemented by controllers, the console, and can be queued. Each feature should have an associated test (automatically created when using sprints).
+First, add the Architect package to your dependencies:
 
-### Tasks
-Tasks are meant to be the smallest pieces of logic within your app. They are responsible for one specific thing. Tasks should not use or require other tasks to perform their duty. They should be isolated, and testable. They extend the Laravel Queuable functionality. 
-
-### Sprints (WIP)
-Think of sprints as migrations for your code. It will generate features and tasks, and their respective tests. The generated code is boilerplate code: you'll still have to write your business logic within the generated classes, but it is intended to save you time and plan ahead which classes and methods you are going to write to fulfill the business objectives.
-
-First, generate a sprint file by running:
-```bash
-php artisan make:sprint "my awesome feature"
+```shell
+composer require angle/architect
 ```
 
-This will create sprint file under /sprints:
-```php
-...
+### Run The Architect Installer
 
-public function run()
+Run the Architect installer to configure the package:
+
+```shell
+php artisan architect:install
+```
+
+## Generating Sprints
+
+To create a sprint, use the ```shell make:sprint``` Artisan command:
+
+```shell
+php artisan make:sprint "Create new user"
+```
+
+The new sprint will be placed in your ```shell sprints``` directory (you can set it either during installation, either by editing ```config/architect.php```). Each sprint file name contains a timestamp which allows Laravel to determine the order of the sprints.
+
+## Sprint Structure
+
+A sprint class contains one method: run. This method is used to generate new features, tasks, and tests for each of these.
+
+Within this method you may use the Architect code generator to expressively create new classes.
+
+```php <?php
+
+use Angle\Architect\Sprint;
+use Angle\Architect\Code\Blueprint;
+use Angle\Architect\Facades\Architect;
+
+class CreateNewUserSprint extends Sprint
 {
-    Architect::feature('my awesome feature', function (Blueprint $code) {
-        $code->will('do something')->expect('request')->return('foo');
-        $code->will('do another thing')->expect('foo')->return('bar');
-        $code->will('one last thing')->expect('foo')->return('baz');
-    });
+    /**
+     * Runs the sprint.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        Architect::feature('Create new user', function (Blueprint $code) {
+            $code->task('validate request')->expect('request')->return('is valid');
+            $code->task('save user')->expect('request')->return('user');
+            $code->task('send email to administrators')->expect('user');
+        });
+    }
 }
+
 ```
-Executing:
-```bash
+
+## Running Sprints
+
+To run all of your sprints, execute the sprint Artisan command:
+
+```shell
 php artisan sprint
 ```
 
-Will generate the following classes:
-```php
-App\Features\MyAwesomeFeature;
-App\Tasks\DoSomething;
-App\Tasks\DoAnotherThing;
-App\Tasks\OneLastThing;
-App\Tests\Feature\MyAwesomeFeatureTest;
-App\Tests\Unit\DoSomethingTest;
-App\Tests\Unit\DoAnotherThingTest;
-App\Tests\Unit\OneLastThingTest;
+### Pretending To Run Sprints
+
+You can safely test your sprint by running the sprint Artisan command with the ```--pretend``` option:
+
+```shell
+php artisan sprint --pretend
 ```
 
-```php
-class MyAwesomeFeature extends Feature 
-{
-    public function handle($request) 
-    {
-        $foo = $this->task(\App\Tasks\DoSomething::class, ['request' => $request]);
-        $bar = $this->task(\App\Tasks\DoAnotherThing::class, ['foo' => $foo]);
-        $baz = $this->task(\App\Tasks\OneLastThing::class, ['foo' => $foo]);
+### Forcing Sprints To Overwrite Existing Files
 
-        return $baz;
-    }
-}
+You may append the ```--force``` option to the sprint Artisan command in order to force the overwriting of existing files.
+
+```shell
+php artisan sprint --force
 ```
-## Why build Architect instead of using Lucid?
-When I heard Abed say at Laracon EU ["No more legacy code"](https://www.youtube.com/watch?v=wSnM4JkyxPw), I was totally seduced by that idea. But when I dived into the [Lucid Architecture](https://github.com/lucid-architecture), it didn't quite fit my routine: I had to move too many files here and there and tear off too many roots from my code base in order to adopt it. My main concern was to keep the Laravel folders in place as I love how the framework is organized. So Architect adds App\Features and App\Tasks folders in your app/ directory instead of requiring you to create Domains and Services directories.
+
+### Rolling Back Sprints
+
+Just like you do with Laravel Migrations, you can rollback sprints. This will remove any file generated by the last batch. Note: you can also append the ```--pretend``` option in order to preview changes.
+
+```shell
+php artisan sprint:rollback
+```
