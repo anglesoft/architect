@@ -15,8 +15,9 @@ class SprintCommand extends Command
      * @todo Add option to disable tests
      * @var string
      */
-    protected $signature = 'sprint {--pretend : Simulates the operation and displays the list of would-be created files}
-                {--force : Force overwritting of existing files}';
+    protected $signature = 'sprint
+        {--pretend : Simulates the operation and displays the list of would-be created files}
+        {--force : Force overwritting of existing files}';
 
     /**
      * The console command description.
@@ -65,14 +66,15 @@ class SprintCommand extends Command
 
         Compiler::sprint();
 
-        if ($this->option('pretend') === true)
+        if ($this->option('pretend') == true) {
             Compiler::pretend();
+        }
 
-        if ($this->option('force') === true)
+        if ($this->option('force') == true) {
             Compiler::force();
+        }
 
-        $sprints_path = config('architect.sprints.path');
-        $files = $this->sprint->getSprintFiles($sprints_path);
+        $files = $this->sprint->getSprintFiles();
 
         if (count($files) == 0) {
             $this->info('Nothing to run.');
@@ -82,7 +84,7 @@ class SprintCommand extends Command
         $runs = 0;
 
         foreach ($files as $file) {
-            $name = $this->sprint->getFileName($file, $sprints_path);
+            $name = $this->sprint->getFileName($file);
 
             if ($this->repository->hasRun($name)) {
                 continue;
@@ -94,16 +96,22 @@ class SprintCommand extends Command
                 $this->line("<fg=magenta;bg=black>Pretending:</> {$name}");
             }
 
-            $path = $this->sprint->getPath($name, $path);
+            $path = $this->sprint->getPath($name);
             $sprint = $this->sprint->resolve($path);
 
             Compiler::reset();
 
-            // This will invoke the compiler implicitly,
-            // as all blueprints will be registered.
-            $sprint->run();
+            try {
+                $sprint->run(); // Invokes the compiler
+            } catch (\Exception $e) {
+                $this->error($e->getMessage());
+                exit;
+            }
 
-            $this->repository->create($name);
+            if ($this->option('pretend') == false) {
+                $this->repository->create($name);
+            }
+
             $runs++;
 
             foreach (Compiler::stack() as $file) {

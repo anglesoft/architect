@@ -201,7 +201,7 @@ class Compiler
     }
 
     /**
-     * Write blueprint code to disk.
+     * Write all blueprint code to disk.
      *
      * @param  boolean $pretend
      * @param  boolean $force
@@ -231,7 +231,7 @@ class Compiler
     }
 
     /**
-     * Write file to disk.
+     * Write single file to disk.
      *
      * @param $path
      * @param $code

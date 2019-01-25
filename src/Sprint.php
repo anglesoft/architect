@@ -27,15 +27,19 @@ class Sprint
         //
     }
 
+    private function getSprintsPath()
+    {
+        return config('architect.sprints.path');
+    }
+
     /**
      * Get all of the sprint files in a given path.
      *
-     * @param  string|array  $paths
      * @return array
      */
-    public function getSprintFiles($paths) : array
+    public function getSprintFiles() : array
     {
-        return Collection::make($paths)->flatMap(function ($path) {
+        return Collection::make($this->getSprintsPath())->flatMap(function ($path) {
             return app('files')->glob($path . '/*_*.php');
         })->all();
     }
@@ -61,8 +65,9 @@ class Sprint
      */
     public function requireSprintFiles(string $path) : void
     {
-        $files = $this->getSprintFiles($path);
-        $this->requireFiles($files);
+        $this->requireFiles(
+            $this->getSprintFiles()
+        );
     }
 
     /**
@@ -82,7 +87,7 @@ class Sprint
      * @param  string  $file
      * @return object
      */
-    public function resolve($file) : object
+    public function resolve(string $file) : object
     {
         $this->requireSprint($file);
 
@@ -108,9 +113,9 @@ class Sprint
      * @param  string $file
      * @return string
      */
-    public function getFileName(string $file, string $path) : string
+    public function getFileName(string $file) : string
     {
-        return str_replace('.php', '', str_replace($path . '/', '', $file));
+        return str_replace('.php', '', str_replace($this->getSprintsPath() . '/', '', $file));
     }
 
     /**
@@ -120,8 +125,10 @@ class Sprint
      * @param  string $path
      * @return string
      */
-    public function getPath(string $sprint, string $path) : string
+    public function getPath(string $sprint, string $path = null) : string
     {
+        $path = $path ?? config('architect.sprints.path');
+
         return $path . '/' . $sprint . '.php';
     }
 }
