@@ -19,7 +19,7 @@ composer require angle/architect
 
 ### Run The Architect Installer
 
-Run the Architect installer to configure the package:
+To finish the installation process and configure the package, use the ```architect:install``` Artisan command:
 
 ```shell
 php artisan architect:install
@@ -27,13 +27,13 @@ php artisan architect:install
 
 ## Generating Sprints
 
-To create a sprint, use the ```shell make:sprint``` Artisan command:
+To create a sprint, use the ```make:sprint``` Artisan command:
 
 ```shell
 php artisan make:sprint "Create new user"
 ```
 
-The new sprint will be placed in your ```shell sprints``` directory (you can set it either during installation, either by editing ```config/architect.php```). Each sprint file name contains a timestamp which allows Laravel to determine the order of the sprints.
+The new sprint will be placed in your ```sprints``` directory (you can set it either during installation, either by editing ```config/architect.php```). Each sprint file name contains a timestamp which allows Laravel to determine the order of the sprints.
 
 ## Sprint Structure
 
