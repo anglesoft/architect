@@ -41,7 +41,8 @@ A sprint class contains one method: run. This method is used to generate new fea
 
 Within this method you may use the Architect code generator to expressively create new classes.
 
-```php <?php
+```php
+<?php
 
 use Angle\Architect\Sprint;
 use Angle\Architect\Code\Blueprint;
