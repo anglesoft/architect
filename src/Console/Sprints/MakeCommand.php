@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\Architect\Console;
+namespace Angle\Architect\Console\Sprints;
 
 use Angle\Architect\Code\Blueprints\Sprint as Blueprint;
 use Angle\Architect\Code\Compiler;
@@ -8,7 +8,7 @@ use Angle\Architect\Console\Command;
 use Angle\Architect\Database\SprintRepository as Repository;
 use Angle\Architect\Sprint;
 
-class MakeSprintCommand extends Command
+class MakeCommand extends Command
 {
     /**
      * The console command signature.

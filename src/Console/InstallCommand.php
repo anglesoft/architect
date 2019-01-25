@@ -5,7 +5,7 @@ namespace Angle\Architect\Console;
 use Angle\Architect\Database\SprintRepository as Repository;
 use Angle\Architect\Console\Command;
 
-class ArchitectInstallCommand extends Command
+class InstallCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -62,14 +62,17 @@ class ArchitectInstallCommand extends Command
 
         $path = $this->ask('Where should we store sprint files?', 'sprints');
         $config = str_replace("'path' => 'sprints'", "'path' => '{$path}'", $config);
+        $this->makeDirectoryFromPath($path);
 
         $namespace = $this->ask('What will be the features namespace?', 'App\Features');
         $config = str_replace("'features' => 'App\Features'", "'features' => '{$namespace}'", $config);
+        $this->makeDirectoryFromNamespace($namespace);
 
         $namespace = $this->ask('What will be the tasks namespace?', 'App\Tasks');
         $config = str_replace("'tasks' => 'App\Tasks'", "'tasks' => '{$namespace}'", $config);
+        $this->makeDirectoryFromNamespace($namespace);
 
-        $case = $this->ask('Which case to use for class properties? (snake|camel)', 'snake');
+        $case = $this->ask('Which case to use for class properties? (camel|snake)', 'camel');
         $config = str_replace("'properties' => 'snake'", "'properties' => '{$case}'", $config);
 
         $file = base_path('config/architect.php');
@@ -88,5 +91,23 @@ class ArchitectInstallCommand extends Command
             $this->repository->createRepository();
             $this->line("<comment>Created table:</comment>  {$table}");
         }
+    }
+
+    private function makeDirectoryFromPath(string $path) : bool
+    {
+        if ( ! app('files')->exists($path)) {
+            return app('files')->makeDirectory($path, 0777, true);
+        }
+
+        $this->line("<comment>Directory already exists:</comment>   {$path}");
+
+        return false;
+    }
+
+    private function makeDirectoryFromNamespace(string $namespace) : bool
+    {
+        return $this->makeDirectoryFromPath(
+            str_replace('\\', '/', lcfirst($namespace))
+        );
     }
 }

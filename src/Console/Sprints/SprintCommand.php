@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\Architect\Console;
+namespace Angle\Architect\Console\Sprints;
 
 use Angle\Architect\Code\Compiler;
 use Angle\Architect\Console\Command;
@@ -16,8 +16,8 @@ class SprintCommand extends Command
      * @var string
      */
     protected $signature = 'sprint
-        {--pretend : Simulates the operation and displays the list of would-be created files}
-        {--force : Force overwritting of existing files}';
+        {--pretend : Simulates the operation}
+        {--force : Force overwriting of existing files}';
 
     /**
      * The console command description.
@@ -82,6 +82,7 @@ class SprintCommand extends Command
         }
 
         $runs = 0;
+        $batch = $this->repository->getNextBatchNumber();
 
         foreach ($files as $file) {
             $name = $this->sprint->getFileName($file);
@@ -101,15 +102,15 @@ class SprintCommand extends Command
 
             Compiler::reset();
 
-            try {
+            // try {
                 $sprint->run(); // Invokes the compiler
-            } catch (\Exception $e) {
-                $this->error($e->getMessage());
-                exit;
-            }
+            // } catch (\Exception $e) {
+            //     $this->error($e->getMessage());
+            //     exit;
+            // }
 
             if ($this->option('pretend') == false) {
-                $this->repository->create($name);
+                $this->repository->create($name, $batch);
             }
 
             $runs++;

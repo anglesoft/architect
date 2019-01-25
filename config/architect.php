@@ -16,7 +16,7 @@ return [
     ],
 
     'compiler' => [
-        'properties' => 'snake', // 'camel'
+        'properties' => 'camel', // camel|snake
         'namespaces' => [
             'features' => 'App\Features',
             'tasks' => 'App\Tasks',

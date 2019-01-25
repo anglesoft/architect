@@ -17,9 +17,10 @@ class ArchitectServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                Console\SprintCommand::class,
-                Console\MakeSprintCommand::class,
-                Console\ArchitectInstallCommand::class
+                Console\InstallCommand::class,
+                Console\Sprints\MakeCommand::class,
+                Console\Sprints\RollbackCommand::class,
+                Console\Sprints\SprintCommand::class,
             ]);
         }
     }

@@ -2,6 +2,11 @@
 
 namespace Angle\Architect\Database;
 
+use Illuminate\Database\Connection;
+use Illuminate\Database\ConnectionResolverInterface;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
+
 class SprintRepository
 {
     /**
@@ -45,12 +50,12 @@ class SprintRepository
      * @param string $sprint
      * @return bool
      */
-    public function create(string $sprint) : bool
+    public function create(string $sprint, int $batch = null) : bool
     {
         return $this->table()
             ->insert([
                 'sprint' => $sprint,
-                'batch' => $this->getNextBatchNumber()
+                'batch' => $batch ?? $this->getNextBatchNumber()
             ]);
     }
 
@@ -67,7 +72,12 @@ class SprintRepository
             ->pluck('sprint')->all();
     }
 
-    public function hasRun($sprint)
+    /**
+     * Check if sprint was run
+     * @param  string  $sprint Sprint name
+     * @return boolean
+     */
+    public function hasRun(string $sprint)
     {
         return in_array($sprint, $this->getRan());
     }
@@ -86,6 +96,18 @@ class SprintRepository
             ->orderBy('sprint', 'desc')
             // ->take($steps)
             ->get()->all();
+    }
+
+    /**
+     * Fetches the sprints to rollback
+     *
+     * @return Support\Illuminate\Collection
+     */
+    public function getSprintsToRollback() : Collection
+    {
+        return $this->getSprintsByBatch(
+            $this->getLastBatchNumber()
+        );
     }
 
     /**
@@ -114,6 +136,19 @@ class SprintRepository
     }
 
     /**
+     * Fetches sprints by batch number
+     * @param  int  $batch
+     * @return Illuminate\Support\Collection
+     */
+    public function getSprintsByBatch(int $batch = null) : Collection
+    {
+        return $this->table()
+            ->orderBy('batch', 'asc')
+            ->where('batch', $batch ?? $this->getLastBatchNumber())
+            ->get();
+    }
+
+    /**
      * Log that a sprint was run.
      *
      * @param  string  $file
@@ -133,9 +168,20 @@ class SprintRepository
      * @param  object  $record
      * @return void
      */
-    public function delete($record)
+    public function delete($record) : void
     {
         $this->table()->where('sprint', $record->sprint)->delete();
+    }
+
+    /**
+     * Remove a sprint by its name.
+     *
+     * @param  string  $sprint
+     * @return void
+     */
+    public function deleteByName(string $sprint) : void
+    {
+        $this->table()->where('sprint', $sprint)->delete();
     }
 
     /**
@@ -143,7 +189,7 @@ class SprintRepository
      *
      * @return int
      */
-    public function getNextBatchNumber()
+    public function getNextBatchNumber() : int
     {
         return $this->getLastBatchNumber() + 1;
     }
@@ -153,9 +199,9 @@ class SprintRepository
      *
      * @return int
      */
-    public function getLastBatchNumber()
+    public function getLastBatchNumber() : int
     {
-        return $this->table()->max('batch');
+        return $this->table()->max('batch') ?? 0;
     }
 
     /**
@@ -163,7 +209,7 @@ class SprintRepository
      *
      * @return void
      */
-    public function createRepository()
+    public function createRepository() : void
     {
         $schema = $this->getConnection()->getSchemaBuilder();
 
@@ -182,7 +228,7 @@ class SprintRepository
      *
      * @return bool
      */
-    public function repositoryExists()
+    public function repositoryExists() : bool
     {
         $schema = $this->getConnection()->getSchemaBuilder();
 
@@ -194,7 +240,7 @@ class SprintRepository
      *
      * @return \Illuminate\Database\Query\Builder
      */
-    protected function table()
+    protected function table() : Builder
     {
         return $this->getConnection()->table($this->table)->useWritePdo();
     }
@@ -204,7 +250,7 @@ class SprintRepository
      *
      * @return \Illuminate\Database\ConnectionResolverInterface
      */
-    public function getConnectionResolver()
+    public function getConnectionResolver() : ConnectionResolverInterface
     {
         return $this->resolver;
     }
@@ -214,7 +260,7 @@ class SprintRepository
      *
      * @return \Illuminate\Database\Connection
      */
-    public function getConnection()
+    public function getConnection() : Connection
     {
         return $this->resolver->connection($this->connection);
     }
@@ -225,7 +271,7 @@ class SprintRepository
      * @param  string  $name
      * @return void
      */
-    public function setSource($name)
+    public function setSource(string $name) : void
     {
         $this->connection = $name;
     }
@@ -236,7 +282,7 @@ class SprintRepository
      * @param  string  $name
      * @return void
      */
-    public function setTable($name)
+    public function setTable(string $name) : void
     {
         $this->table = $name;
     }
