@@ -39,7 +39,7 @@ The new sprint will be placed in your ```sprints``` directory (you can set it ei
 
 A sprint class contains one method: run. This method is used to generate new features, tasks, and tests for each of these.
 
-Within this method you may use the Architect code generator to expressively create new classes.
+Within this method you may use the Architect code Blueprint to expressively create new classes.
 
 ```php
 <?php
