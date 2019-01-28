@@ -5,7 +5,7 @@ Software architecture library for the Laravel Framework.
 
 Architect provides an expressive way to organize and generate boilerplate classes that will hold your application's business logic. The goal of this package is to implement a component-oriented back-end architecture. By using decoupled components, you may reuse parts of your code accross multiple services (Controllers and various API endpoints).
 
-Architect will create tests for each classes it generates, encouraging a Test-Driven Development approach within your organization.
+Architect will create tests for each classes it generates, encouraging a Test-Driven Development approach within your team.
 
 ## Installation
 
