@@ -160,12 +160,17 @@ use {$use};";
 
     protected function makeClassNameFromString(string $string, string $prefix = '', string $suffix = '') : string
     {
-        if ( ! $this->isClassName($string)) { //  && ! is_null($string)
+        if ( ! $this->isClassName($string)) {
             $string = $this->makeStudlyString($string);
             $string = $this->addClassNameSuffix($string, $suffix);
         }
 
         return $string;
+    }
+
+    protected function removeSlashes(string $string = null) : string
+    {
+        return str_replace('\\', '', str_replace('/', '', $string));
     }
 
     protected function makeMethodNameFromString(string $string, string $prefix = '', string $suffix = '') : string
@@ -175,10 +180,13 @@ use {$use};";
             $string = Str::studly($string);
         }
 
-        if ($prefix != '');
+        if ($prefix != '') {
             $suffix = Str::studly($suffix);
+        }
 
-        return Str::camel($prefix . $string . $suffix);
+        $method = Str::camel($prefix . $string . $suffix);
+
+        return $this->removeSlashes($method);
     }
 
     protected function makeNamespaceFromString(string $string) : string
@@ -359,7 +367,7 @@ use {$use};";
     }
 
     /**
-     * Add blueprint to blueprint.
+     * Add blueprint.
      *
      * @param  Blueprint $blueprint
      * @return Blueprint
@@ -407,7 +415,7 @@ use {$use};";
         }
 
         if ($this->isClassName($class)) {
-            $this->pusUse($class);
+            $this->pushUse($class);
         }
 
         return $this;

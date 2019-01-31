@@ -305,20 +305,20 @@ class Compiler
     /**
      * Write single file to disk.
      *
-     * @param $path
-     * @param $code
+     * @param string $path
+     * @param string $code
      */
     public function write($path, $code) : void
     {
         $this->files->put($path, $code);
     }
 
-    public function delete($path)
+    /**
+     * Delete single file from disk.
+     * @param  string $path
+     */
+    public function delete($path) : void
     {
-        try {
-            $this->files->delete($path);
-        } catch(\Exception $e) {
-            dump($e->getMessage());
-        }
+        $this->files->delete($path);
     }
 }

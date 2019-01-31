@@ -25,7 +25,6 @@ class Task extends Blueprint
     public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
         $prefix = config('architect.compiler.namespaces.tasks') . '\\' . $this->makeClassNameFromString($prefix);
-        // $suffix = 'Task'; CONFIG
 
         parent::__construct($description, $callback, $prefix, $suffix);
     }

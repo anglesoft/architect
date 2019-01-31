@@ -27,7 +27,6 @@ class Feature extends Blueprint
     public function __construct(string $description, Closure $callback = null, string $prefix = '', string $suffix = '')
     {
         $prefix = config('architect.compiler.namespaces.features') . '\\' . $this->makeClassNameFromString($prefix);
-        // $suffix = 'Feature'; // CONFIG
 
         parent::__construct($description, $callback, $prefix, $suffix);
     }
